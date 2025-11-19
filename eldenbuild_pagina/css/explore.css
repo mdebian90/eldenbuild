@@ -1,0 +1,100 @@
+@font-face {
+    font-family: "Elden";
+    src: url("../fonts/elden.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+#CabezaExplore {
+    max-width: 1280px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px
+}
+
+#Buscar {
+    width: 50%
+}
+
+#TituloExplore {
+    font-family: "Elden";
+    font-size: 40px;
+    font-weight: 800
+}
+
+#GridExplorar {
+    max-width: 1280px;
+    margin: 0 auto 30px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    padding: 0 14px
+}
+
+.TarjetaBuild {
+    background: #0e1113;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    overflow: hidden
+}
+
+.ImagenBuild {
+    width: 100%;
+    background: #d9d9d9;
+    background-position: center;
+    background-size: cover;
+    aspect-ratio: 4/3
+}
+
+.FilaBuild {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px
+}
+
+.NombreBuild {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%
+}
+
+.LikesBuild {
+    display: flex;
+    align-items: center;
+    gap: 6px
+}
+
+.Icono {
+    width: 16px;
+    height: 16px;
+    background: #e6e6e6;
+    border-radius: 3px
+}
+
+.NumeroLikes {
+    font-size: 13px
+}
+
+@media (max-width:1200px) {
+    #GridExplorar {
+        grid-template-columns: repeat(4, 1fr)
+    }
+}
+
+@media (max-width:900px) {
+    #GridExplorar {
+        grid-template-columns: repeat(3, 1fr)
+    }
+}
+
+@media (max-width:700px) {
+    #GridExplorar {
+        grid-template-columns: repeat(2, 1fr)
+    }
+}

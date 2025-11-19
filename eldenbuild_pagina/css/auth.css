@@ -1,0 +1,36 @@
+#ContenedorAuth {
+    min-height: calc(100vh - 64px);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 6vw
+}
+
+.TarjetaAuth {
+    width: 360px;
+    background: #0e1113;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+}
+
+.TituloAuth {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 800
+}
+
+.CampoTexto {
+    font-size: 14px;
+    color: #cfcfcf
+}
+
+.TextoLinea {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    font-size: 14px
+}

@@ -1,0 +1,133 @@
+@font-face {
+    font-family: "Elden";
+    src: url("../fonts/elden.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+#FavoritosLayout {
+    max-width: 1280px;
+    margin: 20px auto;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+    padding: 0 14px
+}
+
+#ColIzq {
+    background: #0e1113;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px
+}
+
+#Avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 999px;
+    background: #d9d9d9
+}
+
+#NombreUsuario {
+    font-weight: 700
+}
+
+#TituloRecientes {
+
+    align-self: flex-start;
+    margin-top: 8px;
+    margin-bottom: 6px;
+    color: #cfcfcf
+}
+
+#ListaRecientes {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px
+}
+
+.Reciente {
+    position: relative;
+    height: 56px;
+    border-radius: 10px;
+    overflow: hidden
+}
+
+.FondoReciente {
+    position: absolute;
+    inset: 0;
+    background: #d9d9d9;
+    background-position: center;
+    background-size: cover;
+    opacity: .9
+}
+
+.TextoReciente {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    color: #0e1113;
+    font-weight: 800
+}
+
+#TituloFavs {
+    font-family: "Elden";
+    text-align: center;
+    margin-bottom: 12px;
+    font-size: 32px;
+    font-weight: 800
+}
+
+#GridFavs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px
+}
+
+.TarjetaFav {
+    background: #0e1113;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    overflow: hidden
+}
+
+.ImagenFav {
+    width: 100%;
+    background: #d9d9d9;
+    background-position: center;
+    background-size: cover;
+    aspect-ratio: 1/1
+}
+
+.FilaFav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px
+}
+
+.NombreFav {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%
+}
+
+.LikesFav {
+    display: flex;
+    align-items: center;
+    gap: 6px
+}
+
+@media (max-width:1000px) {
+    #FavoritosLayout {
+        grid-template-columns: 1fr
+    }
+}

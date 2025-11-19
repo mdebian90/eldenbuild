@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/settings.css">
+</head>
+
+<body>
+    <nav id="Barra">
+        <div id="Logo">
+            <a href="index.html">EldenBuild</a>
+        </div>
+        <div id="BotonesNav">
+            <a href="explore.html" class="boton_nav">Explore</a>
+            <!-- <a href="creator.html" class="boton_nav">Creator</a> -->
+            <a href="favorites.html" class="boton_nav">Favorites</a>
+            <a href="settings.html" class="boton_nav activo">Settings</a>
+        </div>
+    </nav>
+
+    <div id="WrapSettings">
+        <div id="EncabezadoSettings">
+            <div id="TituloSettings">Settings</div>
+            <a id="SignOut" href="index.html" class="link">Sign Out</a>
+        </div>
+
+        <div id="TarjetaSettings">
+            <div id="TituloCard">Change your account information</div>
+            <div id="CuerpoSettings">
+                <div id="ColFoto">
+                    <div id="AvatarGrande"></div>
+                    <label id="BtnUpload">
+                        <input type="file" id="InputPhoto">
+                        Upload a new photo
+                    </label>
+                </div>
+                <div id="ColFormulario">
+                    <div class="CampoTexto">First name</div>
+                    <input type="text" id="st_nombre">
+                    <div class="CampoTexto">Last name</div>
+                    <input type="text" id="st_apellido">
+                    <div class="CampoTexto">Email address</div>
+                    <input type="text" id="st_correo">
+                    <div class="CampoTexto">Password</div>
+                    <input type="password" id="st_pass">
+                    <button id="GuardarCambios" class="boton primario">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="js/settings.js"></script>
+
+</html>

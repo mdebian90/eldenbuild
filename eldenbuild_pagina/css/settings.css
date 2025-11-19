@@ -1,0 +1,77 @@
+@font-face {
+    font-family: "Elden";
+    src: url("../fonts/elden.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+#WrapSettings {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px
+}
+
+#EncabezadoSettings {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+#TituloSettings {
+    font-family: "Elden";
+    font-size: 40px;
+    font-weight: 800
+}
+
+#TarjetaSettings {
+    background: #0e1113;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px
+}
+
+#TituloCard {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 800
+}
+
+#CuerpoSettings {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px
+}
+
+#AvatarGrande {
+    width: 160px;
+    height: 160px;
+    border-radius: 999px;
+    background: #d9d9d9;
+    margin-bottom: 10px;
+    background-position: center;
+    background-size: cover
+}
+
+#BtnUpload {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    cursor: pointer
+}
+
+#BtnUpload input {
+    display: none
+}
+
+@media (max-width:900px) {
+    #CuerpoSettings {
+        grid-template-columns: 1fr
+    }
+}

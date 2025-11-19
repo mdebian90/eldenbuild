@@ -1,0 +1,13 @@
+#PantallaInicio {
+    min-height: calc(100vh - 64px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 14vh;
+    background: #2b2f31
+}
+
+#BotonesInicio {
+    display: flex;
+    gap: 10px
+}
