@@ -38,7 +38,6 @@
 }
 
 #TituloRecientes {
-
     align-self: flex-start;
     margin-top: 8px;
     margin-bottom: 6px;
@@ -80,7 +79,7 @@
     font-family: "Elden";
     text-align: center;
     margin-bottom: 12px;
-    font-size: 32px;
+    font-size: 40px;
     font-weight: 800
 }
 
@@ -124,6 +123,15 @@
     display: flex;
     align-items: center;
     gap: 6px
+}
+
+.Icono {
+    width: 16px;
+    height: 16px;
+    background-image: url("../img/like.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 @media (max-width:1000px) {

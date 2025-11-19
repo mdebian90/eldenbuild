@@ -1,0 +1,244 @@
+@font-face {
+  font-family: "Elden";
+  src: url("../fonts/elden.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+#EncabezadoCreator {
+  max-width: 1280px;
+  margin: 20px auto 10px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between
+}
+
+#TituloCreator {
+  font-family: "Elden";
+  font-size: 40px;
+  font-weight: 800
+}
+
+#AccionesCreator {
+  display: flex;
+  gap: 10px;
+  align-items: center
+}
+
+#CoverOK {
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 1;
+  color: #73e36a;
+  margin-right: 2px;
+}
+
+#AccionesCreator input[type="file"] {
+  display: none
+}
+
+#GridCreator {
+  max-width: 1280px;
+  margin: 0 auto 30px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  padding: 0 14px
+}
+
+.Tarjeta {
+  background: #0e1113;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px
+}
+
+.FilaTitulo {
+  display: flex;
+  align-items: center;
+  gap: 8px
+}
+
+.Icono {
+  width: 20px;
+  height: 20px
+}
+
+.TituloTarjeta {
+  font-weight: 800
+}
+
+.FilaAtrib {
+  display: grid;
+  grid-template-columns: 1fr 100px 74px;
+  gap: 8px;
+  align-items: center
+}
+
+.Etiqueta {
+  color: #cfcfcf
+}
+
+.InputNum {
+  height: 40px;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, .15);
+  border-radius: 10px;
+  background: #1a1f22;
+  color: #e6e6e6;
+  padding: 0 10px
+}
+
+.Steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px
+}
+
+.BtnMenos,
+.BtnMas {
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, .2);
+  background: #1a1f22;
+  color: #e6e6e6
+}
+
+.FilaInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between
+}
+
+.CampoTexto {
+  font-size: 14px;
+  color: #cfcfcf
+}
+
+.FilaOrigen {
+  display: flex;
+  justify-content: flex-end
+}
+
+#SelectOrigin {
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, .15);
+  border-radius: 10px;
+  background: #1a1f22;
+  color: #e6e6e6;
+  padding: 0 10px
+}
+
+.FilaImgs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px
+}
+
+.CuadroImg {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: #2b2f31;
+  border: 1px solid rgba(255, 255, 255, .15);
+  border-radius: 12px;
+  background-position: center;
+  background-size: cover;
+  cursor: pointer
+}
+
+.FilaCuadros {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px
+}
+
+#ArmorGrupo,
+#TalismanGrupo {
+  grid-template-columns: repeat(4, 1fr)
+}
+
+.Overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .5);
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.PanelOpciones {
+  width: min(700px, 92vw);
+  max-height: 70vh;
+  overflow: auto;
+  background: #0e1113;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px
+}
+
+.PanelOpciones img {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: #1a1f22;
+  cursor: pointer
+}
+
+.PanelOpciones img.usado {
+  opacity: .35;
+  filter: grayscale(1)
+}
+
+.opcion-vacia {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, .25);
+  background: transparent;
+  cursor: pointer
+}
+
+.oculto {
+  display: none
+}
+
+@media (max-width:1100px) {
+  #GridCreator {
+    grid-template-columns: 1fr
+  }
+}
+
+#AccionesCreator .link {
+  padding-bottom: 2px
+}
+
+#AddCover {
+  cursor: pointer
+}
+
+#AddCover input[type="file"] {
+  display: none
+}
+
+.Tarjeta,
+.Tarjeta * {
+  font-family: "Elden", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial;
+}
+
+#ImgOrigin {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  cursor: default;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat
+}

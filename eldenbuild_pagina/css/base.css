@@ -78,7 +78,8 @@ a {
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: transparent;
-    color: #e6e6e6
+    color: #e6e6e6;
+    cursor: pointer;
 }
 
 .boton.primario {
