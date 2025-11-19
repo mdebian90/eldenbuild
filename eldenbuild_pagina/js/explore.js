@@ -1,5 +1,4 @@
 (async function () {
-
   adjustNav();
   const ok = await requireAuth();
   if (!ok) return;
@@ -17,7 +16,7 @@
     const r = await fetch(API + "/obtener_builds_explore");
     if (r.status !== 200) {
       GridExplorar.innerHTML =
-        "<div style='padding:16px'>No se pudieron cargar las builds (" +
+        "<div style='padding:16px'>Error while loading builds (" +
         r.status +
         ").</div>";
       return;
@@ -26,13 +25,13 @@
     datos = json.builds || [];
   } catch (e) {
     GridExplorar.innerHTML =
-      "<div style='padding:16px'>Error de red al cargar builds.</div>";
+      "<div style='padding:16px'>Network error while loading builds</div>";
     return;
   }
 
   if (datos.length === 0) {
     GridExplorar.innerHTML =
-      "<div style='padding:16px'>No hay builds públicas por ahora.</div>";
+      "<div style='padding:16px'>There are no public builds yet</div>";
     return;
   }
 

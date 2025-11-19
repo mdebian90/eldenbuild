@@ -1,10 +1,12 @@
-let idUsuario = 0
-  ; (async function () {
-    if (!await requireSessionOrRedirect()) return
-    const me = await getUsuarioActual()
-    if (!me) { window.location.href = "sign_in.html"; return; }
-    idUsuario = me.id
-  })()
+let idUsuario = 0;
+
+; (async function () {
+  if (!await requireSessionOrRedirect()) return
+
+  const me = await getUsuarioActual()
+  if (!me) { window.location.href = "sign_in.html"; return; }
+  idUsuario = me.id
+})()
 
 const InputCover = document.querySelector("#InputCover")
 const NombreBuild = document.querySelector("#NombreBuild")
@@ -308,6 +310,7 @@ function CargarBuild() {
 
 GuardarBuild.addEventListener("click", function () {
   if (!IdBuild) return
+  window.location.href = "viewer.html?id=" + IdBuild;
   var datosEnviar = {
     id_usuario: idUsuario,
     titulo: (NombreBuild.value || "").trim(),
@@ -329,13 +332,14 @@ GuardarBuild.addEventListener("click", function () {
     armor: NumerosDeGrupo(ArmorGrupo),
     talisman: NumerosDeGrupo(TalismanGrupo),
     cover: BytesPortada
-  }
+  };
+
   fetch("http://localhost:3000/editar_build_" + IdBuild, {
     method: "PUT",
     body: JSON.stringify(datosEnviar)
   }).then(function (r) {
     if (r.status === 200) {
-      alert("Build Edited")
+      alert("Build edited")
       BytesPortada = null
       if (CoverOK) CoverOK.classList.add("oculto")
     } else {

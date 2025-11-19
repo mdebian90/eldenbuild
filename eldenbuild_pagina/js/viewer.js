@@ -1,5 +1,15 @@
 let idUsuario = 0;
 
+; (async function () {
+  if (typeof adjustNav === "function") adjustNav();
+  if (typeof requireAuth === "function") {
+    const ok = await requireAuth();
+    if (!ok) return;
+  }
+  await initUser();
+  await CargarBuild();
+})();
+
 const NombreBuildTexto = document.querySelector("#NombreBuildTexto");
 const AgregarFavoritos = document.querySelector("#AgregarFavoritos");
 const FavOK = document.querySelector("#FavOK");
@@ -30,9 +40,9 @@ const arcaneValor = document.querySelector("#arcaneValor");
 
 let IdBuild = null;
 let Propietario = null;
-let EstadoLike = 0;     
+let EstadoLike = 0;
 let LikesActuales = 0;
-let FavoritoEstado = 0; 
+let FavoritoEstado = 0;
 
 function ObtenerParametro(nombre) {
   const p = new URLSearchParams(location.search);
@@ -134,7 +144,7 @@ async function CargarBuild() {
   if (idUsuario && idUsuario === Propietario) {
     EditarBuildLink.classList.remove("oculto");
     EditarBuildLink.href = "editor.html?id=" + IdBuild;
-    EditarBuildLink.innerHTML = "Edit<br>build"; 
+    EditarBuildLink.innerHTML = "Edit<br>build";
 
     LikeZona.classList.add("oculto");
     LikeZona.style.display = "none";
@@ -217,13 +227,3 @@ BtnLike.addEventListener("click", function () {
     });
   }
 });
-
-; (async function () {
-  if (typeof adjustNav === "function") adjustNav();
-  if (typeof requireAuth === "function") {
-    const ok = await requireAuth();
-    if (!ok) return;
-  }
-  await initUser();
-  await CargarBuild();
-})();

@@ -69,6 +69,7 @@ GuardarCambios.addEventListener("click", function () {
     correo: st_correo.value,
     pass: st_pass.value
   };
+
   fetch("http://localhost:3000/actualizar_usuario_" + id_usuario, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -83,7 +84,7 @@ GuardarCambios.addEventListener("click", function () {
 EliminarCuenta.addEventListener("click", function (e) {
   e.preventDefault();
   if (!confirmarEliminacion) {
-    alert("All your account information will be deleted, if are you really sure to continue, click the button again");
+    alert("All your account information will be deleted, if you really want to continue, click the button again");
     confirmarEliminacion = true;
     return;
   }

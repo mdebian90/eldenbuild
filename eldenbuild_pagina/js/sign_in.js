@@ -11,6 +11,7 @@ in_submit.addEventListener("click", function () {
     correo: in_email.value,
     pass: in_pass.value
   };
+
   fetch("http://localhost:3000/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

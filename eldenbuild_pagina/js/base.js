@@ -19,7 +19,6 @@ async function getUsuarioActual() {
     });
     if (r.status !== 200) return null;
     const u = await r.json();
-
     if (u && typeof u.id !== "number") u.id = Number(u.id || 0);
     return u;
   } catch {
@@ -49,7 +48,6 @@ function adjustNav() {
 }
 
 function setupIndexPage() {
-
   adjustNav();
 
   const btnSignIn = document.getElementById("btnSignIn");
@@ -58,11 +56,9 @@ function setupIndexPage() {
   if (!btnSignIn || !btnSignUp) return;
 
   if (isLoggedIn()) {
-
     btnSignIn.style.display = "none";
     btnSignUp.style.display = "none";
   } else {
-
     btnSignIn.style.display = "inline-block";
     btnSignUp.style.display = "inline-block";
 

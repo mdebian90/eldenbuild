@@ -15,6 +15,7 @@ su_submit.addEventListener("click", function () {
     correo: su_correo.value,
     pass: su_pass.value
   };
+
   fetch("http://localhost:3000/registro", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

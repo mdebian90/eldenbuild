@@ -57,7 +57,6 @@
     border-radius: 10px;
     overflow: hidden;
     background: #2b2f31;
-
     display: flex;
     align-items: center;
     padding: 10px 12px;
@@ -70,11 +69,11 @@
 
 .TextoReciente {
     color: #e6e6e6;
-
     font-weight: 800;
     line-height: 1.2;
     word-break: break-word;
 }
+
 
 #TituloFavs {
     font-family: "Elden";

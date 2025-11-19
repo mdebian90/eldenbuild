@@ -1,5 +1,4 @@
 (async function () {
-
   adjustNav();
   const ok = await requireAuth();
   if (!ok) return;
@@ -37,7 +36,6 @@
         FotoUsuario.style.backgroundPosition = "center";
       }
     } else {
-
       const def = "img/default.png";
       if (FotoUsuario && FotoUsuario.tagName && FotoUsuario.tagName.toLowerCase() === "img") {
         FotoUsuario.src = def;
@@ -61,11 +59,11 @@
   try {
     const rf = await fetch(API + "/obtener_favoritos_" + id_usuario);
     if (rf.status !== 200) {
-      if (GridFavs) GridFavs.innerHTML = "<div style='padding:16px'>No se pudieron cargar tus favoritos.</div>";
+      if (GridFavs) GridFavs.innerHTML = "<div style='padding:16px'>Error while loading favorites</div>";
     } else {
       const favs = (await rf.json()).builds || [];
       if (favs.length === 0) {
-        if (GridFavs) GridFavs.innerHTML = "<div style='padding:16px'>Aún no tienes favoritos.</div>";
+        if (GridFavs) GridFavs.innerHTML = "<div style='padding:16px'>You have no favorites yet</div>";
       } else {
         for (let i = 0; i < favs.length; i++) {
           const b = favs[i];
@@ -104,7 +102,7 @@
       }
     }
   } catch {
-    if (GridFavs) GridFavs.innerHTML = "<div style='padding:16px'>Error de red al cargar favoritos.</div>";
+    if (GridFavs) GridFavs.innerHTML = "<div style='padding:16px'>Network error while loading builds</div>";
   }
 
   async function DibujarMisBuilds() {
@@ -114,14 +112,14 @@
     try {
       const r = await fetch(API + "/obtener_builds_usuario_" + id_usuario);
       if (r.status !== 200) {
-        ListaRecientes.innerHTML = "<div style='padding:8px'>No se pudieron cargar tus builds.</div>";
+        ListaRecientes.innerHTML = "<div style='padding:8px'>Error while loading builds</div>";
         return;
       }
       const datos = await r.json();
       const misBuilds = datos.builds || [];
 
       if (misBuilds.length === 0) {
-        ListaRecientes.innerHTML = "<div style='padding:8px'>Aún no has creado builds.</div>";
+        ListaRecientes.innerHTML = "<div style='padding:8px'>You have created no builds yet</div>";
         return;
       }
 
@@ -147,7 +145,7 @@
         ListaRecientes.appendChild(item);
       }
     } catch {
-      ListaRecientes.innerHTML = "<div style='padding:8px'>Error de red al cargar tus builds.</div>";
+      ListaRecientes.innerHTML = "<div style='padding:8px'>Network error while loading builds</div>";
     }
   }
 

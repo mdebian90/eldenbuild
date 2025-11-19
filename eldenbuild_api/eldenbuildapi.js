@@ -11,7 +11,7 @@ const DB_CFG = {
   password: "",
   database: "eldenbuild"
 };
-const JWT_SECRET = "eldenbuild_super_secreto_2025";
+const JWT_SECRET = "17435DYJH13489GRSSQHUWI";
 
 const RUTA_DEFAULT_BUILD = path.join(__dirname, "img", "default.png");
 
@@ -47,7 +47,6 @@ function parseJSONSeguro(buffer) {
 }
 
 function extraerBearerId(req) {
-
   const auth = req.headers["authorization"] || "";
   const partes = auth.split(" ");
   if (partes.length === 2 && partes[0].toLowerCase() === "bearer") {
@@ -64,7 +63,6 @@ function extraerBearerId(req) {
 }
 
 const server = http.createServer(async (req, res) => {
-
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "*");
@@ -75,9 +73,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   try {
-
     if (req.method === "GET") {
-
       if (req.url === "/obtener_builds_explore") {
         pool.query(
           "SELECT id, titulo, likes FROM builds WHERE publica = 1 ORDER BY fecha DESC",
@@ -259,12 +255,12 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
+
       enviarJSON(res, 404, { mensaje: "not found" });
       return;
     }
 
     if (req.method === "POST") {
-
       if (req.url === "/crear_build") {
         const body = await leerCuerpo(req);
         const data = parseJSONSeguro(body);
@@ -472,7 +468,6 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === "PUT") {
-
       if (req.url.startsWith("/editar_build_")) {
         const id = parseInt(req.url.replace("/editar_build_", "") || "0");
         if (!id) return enviarJSON(res, 400, { mensaje: "id invalido" });
@@ -609,7 +604,6 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === "DELETE") {
-
       if (req.url.startsWith("/eliminar_build_")) {
         const id = parseInt(req.url.replace("/eliminar_build_", "") || "0");
         if (!id) return enviarJSON(res, 400, { mensaje: "id invalido" });

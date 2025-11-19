@@ -1,7 +1,6 @@
 let idUsuario = 0;
 
 ; (async function () {
-
   if (typeof adjustNav === "function") adjustNav();
 
   const ok = await requireAuth();
@@ -244,31 +243,29 @@ CalcularNivel();
 SelectOrigin.dispatchEvent(new Event("change"));
 
 GuardarBuild.addEventListener("click", function () {
-  if (!idUsuario) { alert("Please sign in again."); window.location.href = "sign_in.html"; return; }
+  if (!idUsuario) { alert("Please sign in again"); window.location.href = "sign_in.html"; return; }
 
   var nombreBuild = (NombreBuild.value || "").trim();
   if (nombreBuild === "") {
-    alert("Build name empty! Please name your build.");
+    alert("Build name empty! Please name your build");
     NombreBuild.focus();
     return;
   }
 
-  fetch(API + "/existe_build_" + encodeURIComponent(nombreBuild))
-    .then(function (r) {
-      if (r.status === 200) {
-        r.json().then(function (o) {
-          if (o.existe === 1) {
-            alert("A build with that name already exists");
-          } else {
-            EnviarBuild(nombreBuild);
-          }
-        });
-      } else {
-        EnviarBuild(nombreBuild);
-      }
-    })
+  fetch(API + "/existe_build_" + encodeURIComponent(nombreBuild)).then(function (r) {
+    if (r.status === 200) {
+      r.json().then(function (o) {
+        if (o.existe === 1) {
+          alert("A build with that name already exists");
+        } else {
+          EnviarBuild(nombreBuild);
+        }
+      });
+    } else {
+      EnviarBuild(nombreBuild);
+    }
+  })
     .catch(function () {
-
       EnviarBuild(nombreBuild);
     });
 });
@@ -301,21 +298,20 @@ function EnviarBuild(nombreBuild) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(datosEnviar)
+  }).then(function (respuesta) {
+    if (respuesta.status === 200) {
+      alert("Build saved");
+      NombreBuild.value = "";
+      BytesPortada = null;
+      if (CoverOK) CoverOK.classList.add("oculto");
+    } else if (respuesta.status === 409) {
+      respuesta.json().then(function (obj) { alert(obj.mensaje || "Duplicated"); });
+    } else if (respuesta.status === 400) {
+      respuesta.json().then(function (obj) { alert(obj.mensaje || "Error"); });
+    } else {
+      respuesta.text().then(t => alert("Error (" + respuesta.status + "): " + t)).catch(() => alert("Error"));
+    }
   })
-    .then(function (respuesta) {
-      if (respuesta.status === 200) {
-        alert("Build Saved");
-        NombreBuild.value = "";
-        BytesPortada = null;
-        if (CoverOK) CoverOK.classList.add("oculto");
-      } else if (respuesta.status === 409) {
-        respuesta.json().then(function (obj) { alert(obj.mensaje || "Duplicated"); });
-      } else if (respuesta.status === 400) {
-        respuesta.json().then(function (obj) { alert(obj.mensaje || "Error"); });
-      } else {
-        respuesta.text().then(t => alert("Error (" + respuesta.status + "): " + t)).catch(() => alert("Error"));
-      }
-    })
     .catch(function () {
       alert("Network error");
     });
