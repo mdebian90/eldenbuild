@@ -1,0 +1,124 @@
+.InputNum {
+  pointer-events: none
+}
+
+.BtnMenos,
+.BtnMas {
+  display: none
+}
+
+.CuadroImg {
+  pointer-events: none
+}
+
+#AgregarFavoritos {
+  background: none;
+  border: none;
+  color: #e6e6e6;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  transition: opacity 0.2s ease;
+}
+
+#AgregarFavoritos:hover {
+  opacity: 0.7;
+}
+
+#FavOK {
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 1;
+  color: #73e36a;
+  margin-right: 4px;
+}
+
+#NombreBuildTexto {
+  font-weight: 700;
+  margin-left: 12px;
+}
+
+.FilaAtrib {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.FilaAtrib:last-child {
+  border-bottom: none;
+}
+
+.Etiqueta {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  margin-right: 10px;
+}
+
+.ValorAtrib {
+  font-size: 15px;
+  font-weight: 600;
+  text-align: right;
+  min-width: 40px;
+}
+
+.FilaInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.CampoTexto {
+  margin-top: 18px;
+  font-weight: 700;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+#CharacterNameTexto {
+  margin-top: 8px;
+  margin-bottom: 16px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.FilaImgs {
+  display: flex;
+  gap: 20px;
+  margin-top: 14px;
+}
+
+.Tarjeta:last-child .CampoTexto {
+  margin-top: 0px;
+}
+
+.Tarjeta:last-child .FilaCuadros {
+  margin-top: 0px;
+}
+
+#AgregarFavoritos {
+  background: none;
+  border: none;
+  color: #e6e6e6;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  transition: opacity 0.2s ease;
+}
+
+#AgregarFavoritos:hover {
+  opacity: 0.7;
+}
+
+#FavOK {
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 1;
+  color: #73e36a;
+  margin-right: 4px;
+}

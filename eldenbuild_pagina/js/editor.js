@@ -1,0 +1,350 @@
+var idUsuario = 1
+const InputCover = document.querySelector("#InputCover")
+const NombreBuild = document.querySelector("#NombreBuild")
+const GuardarBuild = document.querySelector("#GuardarBuild")
+const BorrarBuild = document.querySelector("#BorrarBuild")
+const CoverOK = document.querySelector("#CoverOK")
+
+const ListaIdsAtributos = ["vigor", "mind", "endurance", "strength", "dexterity", "intelligence", "faith", "arcane"]
+const CamposAtributos = ListaIdsAtributos.map(function (idCampo) { return document.querySelector("#" + idCampo) })
+const TextoLevel = document.querySelector("#TextoLevel")
+const TextoRunes = document.querySelector("#TextoRunes")
+
+const CharacterName = document.querySelector("#CharacterName")
+const SelectOrigin = document.querySelector("#SelectOrigin")
+const ImgOrigin = document.querySelector("#ImgOrigin")
+const HairSlot = document.querySelector("#HairSlot")
+
+const Overlay = document.querySelector("#Overlay")
+const PanelOpciones = document.querySelector("#PanelOpciones")
+const InputSelectorOculto = document.querySelector("#InputSelectorOculto")
+
+const RHGrupo = document.querySelector("#RHGrupo")
+const LHGrupo = document.querySelector("#LHGrupo")
+const ArmorGrupo = document.querySelector("#ArmorGrupo")
+const TalismanGrupo = document.querySelector("#TalismanGrupo")
+
+var BytesPortada = null
+var OrigenSeleccionado = "Vagabond"
+var IdBuild = null
+
+function LimitarNumero(textoNumero, minimo, maximo) {
+  var numero = parseInt(textoNumero || "0")
+  if (isNaN(numero)) numero = 0
+  if (numero < minimo) numero = minimo
+  if (numero > maximo) numero = maximo
+  return numero
+}
+
+function CalcularNivel() {
+  var sumaBase = 80
+  var sumaAtributos = 0
+  var i = 0
+  for (i = 0; i < CamposAtributos.length; i++) {
+    var valorAtributo = LimitarNumero(CamposAtributos[i].value, 1, 99)
+    CamposAtributos[i].value = valorAtributo
+    sumaAtributos += valorAtributo
+  }
+  var nivelCalculado = 1 + (sumaAtributos - sumaBase)
+  if (nivelCalculado < 1) nivelCalculado = 1
+  TextoLevel.innerHTML = String(nivelCalculado)
+  var runasCalculadas = Math.floor(0.02 * nivelCalculado * nivelCalculado * nivelCalculado + 3 * nivelCalculado * nivelCalculado + 106 * nivelCalculado)
+  if (runasCalculadas < 0) runasCalculadas = 0
+  TextoRunes.innerHTML = String(runasCalculadas)
+}
+
+var i = 0
+for (i = 0; i < CamposAtributos.length; i++) {
+  CamposAtributos[i].addEventListener("input", CalcularNivel)
+}
+
+const BtnMenos = document.querySelectorAll(".BtnMenos")
+var j = 0
+for (j = 0; j < BtnMenos.length; j++) {
+  BtnMenos[j].addEventListener("click", function (e) {
+    var campoObjetivo = document.querySelector("#" + e.currentTarget.getAttribute("data-target"))
+    campoObjetivo.value = LimitarNumero(parseInt(campoObjetivo.value || "0") - 1, 1, 99)
+    CalcularNivel()
+  })
+}
+
+const BtnMas = document.querySelectorAll(".BtnMas")
+var k = 0
+for (k = 0; k < BtnMas.length; k++) {
+  BtnMas[k].addEventListener("click", function (e) {
+    var campoObjetivo = document.querySelector("#" + e.currentTarget.getAttribute("data-target"))
+    campoObjetivo.value = LimitarNumero(parseInt(campoObjetivo.value || "0") + 1, 1, 99)
+    CalcularNivel()
+  })
+}
+
+SelectOrigin.addEventListener("change", function () {
+  OrigenSeleccionado = SelectOrigin.value
+  var rutaImagen = "img/origin/" + OrigenSeleccionado.toLowerCase() + ".png"
+  ImgOrigin.style.backgroundImage = "url('" + rutaImagen + "')"
+})
+
+HairSlot.addEventListener("click", function () {
+  AbrirPanelOpciones("img/hairstyle", 24, null, HairSlot)
+})
+
+function LimpiarDuplicados(nombreGrupo, rutaSeleccionada, elementoExcepto) {
+  var CuadroImg = document.querySelectorAll('.CuadroImg[data-group="' + nombreGrupo + '"]')
+  var x = 0
+  for (x = 0; x < CuadroImg.length; x++) {
+    var cuadro = CuadroImg[x]
+    var rutaActual = cuadro.getAttribute("data-src") || ""
+    if (cuadro !== elementoExcepto && rutaActual === rutaSeleccionada) {
+      cuadro.style.backgroundImage = ""
+      cuadro.setAttribute("data-src", "")
+    }
+  }
+}
+
+function AsignarImagen(cuadroDestino, rutaImagen) {
+  var grupo = cuadroDestino.getAttribute("data-group") || ""
+  if (rutaImagen && (grupo === "hand" || grupo === "talisman")) {
+    LimpiarDuplicados(grupo, rutaImagen, cuadroDestino)
+  }
+  if (rutaImagen) {
+    cuadroDestino.style.backgroundImage = "url('" + rutaImagen + "')"
+    cuadroDestino.setAttribute("data-src", rutaImagen)
+  } else {
+    cuadroDestino.style.backgroundImage = ""
+    cuadroDestino.setAttribute("data-src", "")
+  }
+}
+
+function ConectarGrupoCuadros(contenedorGrupo) {
+  var CuadroImg = contenedorGrupo.querySelectorAll(".CuadroImg")
+  var y = 0
+  for (y = 0; y < CuadroImg.length; y++) {
+    CuadroImg[y].addEventListener("click", function (e) {
+      var cuadro = e.currentTarget
+      var carpeta = cuadro.getAttribute("data-folder") || ""
+      AbrirPanelOpciones(carpeta, 200, function (rutaElegida) {
+        AsignarImagen(cuadro, rutaElegida)
+      }, cuadro)
+    })
+  }
+}
+
+ConectarGrupoCuadros(RHGrupo)
+ConectarGrupoCuadros(LHGrupo)
+ConectarGrupoCuadros(ArmorGrupo)
+ConectarGrupoCuadros(TalismanGrupo)
+
+function AbrirPanelOpciones(carpetaBase, cantidadMaxima, funcionSeleccion, cuadroActual) {
+  PanelOpciones.innerHTML = ""
+  var rutasUsadas = {}
+  if (cuadroActual) {
+    var grupoActual = cuadroActual.getAttribute("data-group") || ""
+    if (grupoActual !== "") {
+      var CuadroImg = document.querySelectorAll('.CuadroImg[data-group="' + grupoActual + '"]')
+      var z = 0
+      for (z = 0; z < CuadroImg.length; z++) {
+        var rutaUsada = CuadroImg[z].getAttribute("data-src") || ""
+        if (rutaUsada) rutasUsadas[rutaUsada] = true
+      }
+    }
+  }
+  var opcionVacia = document.createElement("div")
+  opcionVacia.className = "opcion-vacia"
+  opcionVacia.addEventListener("click", function () {
+    if (cuadroActual) {
+      AsignarImagen(cuadroActual, null)
+    } else if (funcionSeleccion) {
+      funcionSeleccion("")
+    }
+    Overlay.classList.add("oculto")
+  })
+  PanelOpciones.appendChild(opcionVacia)
+  function AgregarOpcion(ruta) {
+    var imagen = document.createElement("img")
+    imagen.src = ruta
+    imagen.addEventListener("load", function () {
+      if (rutasUsadas[ruta]) imagen.classList.add("usado")
+      imagen.addEventListener("click", function (e) {
+        var rutaElegida = e.target.src
+        if (cuadroActual) {
+          AsignarImagen(cuadroActual, rutaElegida)
+        } else if (funcionSeleccion) {
+          funcionSeleccion(rutaElegida)
+        }
+        Overlay.classList.add("oculto")
+      })
+      PanelOpciones.appendChild(imagen)
+    })
+    imagen.addEventListener("error", function () { })
+  }
+  var n = 0
+  for (n = 1; n <= cantidadMaxima; n++) {
+    AgregarOpcion(carpetaBase + "/" + n + ".png")
+  }
+  Overlay.classList.remove("oculto")
+}
+
+Overlay.addEventListener("click", function (e) {
+  if (e.target === Overlay) {
+    Overlay.classList.add("oculto")
+  }
+})
+
+InputCover.addEventListener("change", function () {
+  if (!InputCover.files || !InputCover.files[0]) {
+    BytesPortada = null
+    if (CoverOK) CoverOK.classList.add("oculto")
+    return
+  }
+  var archivoPortada = InputCover.files[0]
+  var lector = new FileReader()
+  lector.onload = function () {
+    try {
+      var arreglo = new Uint8Array(lector.result)
+      BytesPortada = Array.from(arreglo)
+      if (CoverOK) CoverOK.classList.remove("oculto")
+    } catch (e) {
+      BytesPortada = null
+      if (CoverOK) CoverOK.classList.add("oculto")
+    }
+  }
+  lector.onerror = function () {
+    BytesPortada = null
+    if (CoverOK) CoverOK.classList.add("oculto")
+  }
+  lector.readAsArrayBuffer(archivoPortada)
+})
+
+function ObtenerNumero(cuadro) {
+  var ruta = cuadro.getAttribute("data-src") || ""
+  if (ruta === "") return null
+  var nombreArchivo = ruta.split("/").pop().split(".")[0]
+  var numero = parseInt(nombreArchivo || "0")
+  if (isNaN(numero)) return null
+  return numero
+}
+
+function NumerosDeGrupo(contenedorGrupo) {
+  var lista = []
+  var CuadroImg = contenedorGrupo.querySelectorAll(".CuadroImg")
+  var m = 0
+  for (m = 0; m < CuadroImg.length; m++) {
+    lista.push(ObtenerNumero(CuadroImg[m]))
+  }
+  return lista
+}
+
+function ObtenerParametro(nombre) {
+  var p = new URLSearchParams(location.search)
+  return p.get(nombre)
+}
+
+function CargarBuild() {
+  IdBuild = ObtenerParametro("id")
+  if (!IdBuild) return
+  fetch("http://localhost:3000/obtener_build_" + IdBuild).then(function (r) {
+    if (r.status === 200) {
+      r.json().then(function (b) {
+        NombreBuild.value = b.titulo || ""
+        TextoLevel.innerHTML = String(b.nivel || 1)
+        TextoRunes.innerHTML = String(b.runas || 0)
+        CharacterName.value = b.personaje || ""
+        OrigenSeleccionado = b.origen || "Wretch"
+        SelectOrigin.value = OrigenSeleccionado
+        SelectOrigin.dispatchEvent(new Event("change"))
+        var hs = b.peinado
+        if (hs != null) {
+          HairSlot.style.backgroundImage = "url('img/hairstyle/" + hs + ".png')"
+          HairSlot.setAttribute("data-src", "img/hairstyle/" + hs + ".png")
+        } else {
+          HairSlot.style.backgroundImage = ""
+          HairSlot.setAttribute("data-src", "")
+        }
+        document.querySelector("#vigor").value = b.vigor || 10
+        document.querySelector("#mind").value = b.mind || 10
+        document.querySelector("#endurance").value = b.endurance || 10
+        document.querySelector("#strength").value = b.strength || 10
+        document.querySelector("#dexterity").value = b.dexterity || 10
+        document.querySelector("#intelligence").value = b.intelligence || 10
+        document.querySelector("#faith").value = b.faith || 10
+        document.querySelector("#arcane").value = b.arcane || 10
+        CalcularNivel()
+        var rh = [b.rh1, b.rh2, b.rh3, b.rh4, b.rh5]
+        var lh = [b.lh1, b.lh2, b.lh3, b.lh4, b.lh5]
+        var ar = [b.ar1, b.ar2, b.ar3, b.ar4]
+        var ta = [b.ta1, b.ta2, b.ta3, b.ta4]
+        function PintarGrupo(contenedor, arr) {
+          var CuadroImg = contenedor.querySelectorAll(".CuadroImg")
+          var i = 0
+          for (i = 0; i < CuadroImg.length; i++) {
+            var n = arr[i]
+            if (n != null) {
+              var folder = CuadroImg[i].getAttribute("data-folder") || ""
+              var ruta = folder + "/" + n + ".png"
+              CuadroImg[i].style.backgroundImage = "url('" + ruta + "')"
+              CuadroImg[i].setAttribute("data-src", ruta)
+            } else {
+              CuadroImg[i].style.backgroundImage = ""
+              CuadroImg[i].setAttribute("data-src", "")
+            }
+          }
+        }
+        PintarGrupo(RHGrupo, rh)
+        PintarGrupo(LHGrupo, lh)
+        PintarGrupo(ArmorGrupo, ar)
+        PintarGrupo(TalismanGrupo, ta)
+      })
+    }
+  })
+}
+
+GuardarBuild.addEventListener("click", function () {
+  if (!IdBuild) return
+  var datosEnviar = {
+    id_usuario: idUsuario,
+    titulo: (NombreBuild.value || "").trim(),
+    vigor: LimitarNumero(document.querySelector("#vigor").value, 1, 99),
+    mind: LimitarNumero(document.querySelector("#mind").value, 1, 99),
+    endurance: LimitarNumero(document.querySelector("#endurance").value, 1, 99),
+    strength: LimitarNumero(document.querySelector("#strength").value, 1, 99),
+    dexterity: LimitarNumero(document.querySelector("#dexterity").value, 1, 99),
+    intelligence: LimitarNumero(document.querySelector("#intelligence").value, 1, 99),
+    faith: LimitarNumero(document.querySelector("#faith").value, 1, 99),
+    arcane: LimitarNumero(document.querySelector("#arcane").value, 1, 99),
+    level: parseInt(TextoLevel.innerHTML || "1"),
+    runes: parseInt(TextoRunes.innerHTML || "0"),
+    character_name: (CharacterName.value || "").trim(),
+    origin: OrigenSeleccionado,
+    hairstyle: ObtenerNumero(HairSlot),
+    rh: NumerosDeGrupo(RHGrupo),
+    lh: NumerosDeGrupo(LHGrupo),
+    armor: NumerosDeGrupo(ArmorGrupo),
+    talisman: NumerosDeGrupo(TalismanGrupo),
+    cover: BytesPortada
+  }
+  fetch("http://localhost:3000/editar_build_" + IdBuild, {
+    method: "PUT",
+    body: JSON.stringify(datosEnviar)
+  }).then(function (r) {
+    if (r.status === 200) {
+      alert("Build Edited")
+      BytesPortada = null
+      if (CoverOK) CoverOK.classList.add("oculto")
+    } else {
+      alert("Error")
+    }
+  })
+})
+
+BorrarBuild.addEventListener("click", function () {
+  if (!IdBuild) return
+  fetch("http://localhost:3000/eliminar_build_" + IdBuild, { method: "DELETE" }).then(function (r) {
+    if (r.status === 200) {
+      location.href = "explore.html"
+    } else {
+      alert("Error")
+    }
+  })
+})
+
+CargarBuild()

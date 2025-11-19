@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Viewer</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/creator.css">
+  <link rel="stylesheet" href="css/viewer.css">
+</head>
+
+<body>
+  <nav id="Barra">
+    <div id="Logo">
+      <a href="index.html">EldenBuild</a>
+    </div>
+    <div id="BotonesNav">
+      <a href="explore.html" class="boton_nav">Explore</a>
+      <a href="creator.html" class="boton_nav">Creator</a>
+      <a href="favorites.html" class="boton_nav">Favorites</a>
+      <a href="settings.html" class="boton_nav">Settings</a>
+    </div>
+  </nav>
+
+  <div id="EncabezadoCreator">
+    <div id="TituloCreator">Build Viewer</div>
+    <div id="AccionesCreator">
+      <span id="FavOK" class="ok oculto" aria-hidden="true">✓</span>
+      <button id="AgregarFavoritos" class="link">Add to favorites</button>
+      <div id="NombreBuildTexto"></div>
+      <a id="EditarBuildLink" href="#" class="boton primario oculto">Edit build</a>
+      <div id="LikeZona" class="LikesBuild oculto">
+        <button id="BtnLike" class="Icono"></button>
+        <div id="LikesNumero" class="NumeroLikes">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="GridCreator">
+    <div class="Tarjeta">
+      <div class="FilaTitulo">
+        <img class="Icono" src="img/icon/attribute.png">
+        <div class="TituloTarjeta">Attribute Points</div>
+      </div>
+
+      <div class="FilaAtrib">
+        <div class="Etiqueta">Vigor</div>
+        <div class="ValorAtrib" id="vigorValor">10</div>
+        <div class="Steps oculto"></div>
+      </div>
+
+      <div class="FilaAtrib">
+        <div class="Etiqueta">Mind</div>
+        <div class="ValorAtrib" id="mindValor">10</div>
+        <div class="Steps oculto"></div>
+      </div>
+
+      <div class="FilaAtrib">
+        <div class="Etiqueta">Endurance</div>
+        <div class="ValorAtrib" id="enduranceValor">10</div>
+        <div class="Steps oculto"></div>
+      </div>
+
+      <div class="FilaAtrib">
+        <div class="Etiqueta">Strength</div>
+        <div class="ValorAtrib" id="strengthValor">10</div>
+        <div class="Steps oculto"></div>
+      </div>
+
+      <div class="FilaAtrib">
+        <div class="Etiqueta">Dexterity</div>
+        <div class="ValorAtrib" id="dexterityValor">10</div>
+        <div class="Steps oculto"></div>
+      </div>
+
+      <div class="FilaAtrib">
+        <div class="Etiqueta">Intelligence</div>
+        <div class="ValorAtrib" id="intelligenceValor">10</div>
+        <div class="Steps oculto"></div>
+      </div>
+
+      <div class="FilaAtrib">
+        <div class="Etiqueta">Faith</div>
+        <div class="ValorAtrib" id="faithValor">10</div>
+        <div class="Steps oculto"></div>
+      </div>
+
+      <div class="FilaAtrib">
+        <div class="Etiqueta">Arcane</div>
+        <div class="ValorAtrib" id="arcaneValor">10</div>
+        <div class="Steps oculto"></div>
+      </div>
+    </div>
+
+    <div class="Tarjeta">
+      <div class="FilaTitulo">
+        <img class="Icono" src="img/icon/general.png">
+        <div class="TituloTarjeta">General Information</div>
+      </div>
+
+      <div class="FilaInfo">
+        <div class="InfoIzq">Level: <span id="TextoLevel">1</span></div>
+        <div class="InfoDer">Runes Needed: <span id="TextoRunes">0</span></div>
+      </div>
+
+      <div class="CampoTexto">Character Name</div>
+      <div id="CharacterNameTexto" class="ValorTexto"></div>
+
+      <div class="CampoTexto">Character Origin & Hairstyle</div>
+      <div class="FilaOrigen"></div>
+
+      <div class="FilaImgs">
+        <div id="ImgOrigin" class="CuadroImg"></div>
+        <div id="HairSlot" class="CuadroImg"></div>
+      </div>
+
+      <div id="Overlay" class="Overlay oculto">
+        <div class="PanelOpciones" id="PanelOpciones"></div>
+      </div>
+    </div>
+
+    <div class="Tarjeta">
+      <div class="FilaTitulo">
+        <img class="Icono" src="img/icon/equipment.png">
+        <div class="TituloTarjeta">Equipment</div>
+      </div>
+
+      <div class="CampoTexto">Right Hand Armament</div>
+      <div class="FilaCuadros" id="RHGrupo">
+        <div class="CuadroImg" data-slot="rh1" data-group="hand" data-folder="img/harmament/1"></div>
+        <div class="CuadroImg" data-slot="rh2" data-group="hand" data-folder="img/harmament/1"></div>
+        <div class="CuadroImg" data-slot="rh3" data-group="hand" data-folder="img/harmament/1"></div>
+        <div class="CuadroImg" data-slot="rh4" data-group="hand" data-folder="img/harmament/2"></div>
+        <div class="CuadroImg" data-slot="rh5" data-group="hand" data-folder="img/harmament/2"></div>
+      </div>
+
+      <div class="CampoTexto">Left Hand Armament</div>
+      <div class="FilaCuadros" id="LHGrupo">
+        <div class="CuadroImg" data-slot="lh1" data-group="hand" data-folder="img/harmament/1"></div>
+        <div class="CuadroImg" data-slot="lh2" data-group="hand" data-folder="img/harmament/1"></div>
+        <div class="CuadroImg" data-slot="lh3" data-group="hand" data-folder="img/harmament/1"></div>
+        <div class="CuadroImg" data-slot="lh4" data-group="hand" data-folder="img/harmament/2"></div>
+        <div class="CuadroImg" data-slot="lh5" data-group="hand" data-folder="img/harmament/2"></div>
+      </div>
+
+      <div class="CampoTexto">Armor</div>
+      <div class="FilaCuadros" id="ArmorGrupo">
+        <div class="CuadroImg" data-slot="ar1" data-folder="img/armor/1"></div>
+        <div class="CuadroImg" data-slot="ar2" data-folder="img/armor/2"></div>
+        <div class="CuadroImg" data-slot="ar3" data-folder="img/armor/3"></div>
+        <div class="CuadroImg" data-slot="ar4" data-folder="img/armor/4"></div>
+      </div>
+
+      <div class="CampoTexto">Talisman</div>
+      <div class="FilaCuadros" id="TalismanGrupo">
+        <div class="CuadroImg" data-slot="ta1" data-group="talisman" data-folder="img/talisman"></div>
+        <div class="CuadroImg" data-slot="ta2" data-group="talisman" data-folder="img/talisman"></div>
+        <div class="CuadroImg" data-slot="ta3" data-group="talisman" data-folder="img/talisman"></div>
+        <div class="CuadroImg" data-slot="ta4" data-group="talisman" data-folder="img/talisman"></div>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="InputSelectorOculto" class="oculto">
+</body>
+<script src="js/viewer.js"></script>
+
+</html>
