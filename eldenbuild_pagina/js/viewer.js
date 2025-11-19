@@ -1,4 +1,4 @@
-var idUsuario = 1
+let idUsuario = 0
 const NombreBuildTexto = document.querySelector("#NombreBuildTexto")
 const AgregarFavoritos = document.querySelector("#AgregarFavoritos")
 const FavOK = document.querySelector("#FavOK")
@@ -27,24 +27,23 @@ const intelligenceValor = document.querySelector("#intelligenceValor")
 const faithValor = document.querySelector("#faithValor")
 const arcaneValor = document.querySelector("#arcaneValor")
 
-var IdBuild = null
-var Propietario = null
-var EstadoLike = 0
-var LikesActuales = 0
+let IdBuild = null
+let Propietario = null
+let EstadoLike = 0
+let LikesActuales = 0
+let FavoritoEstado = 0
 
 function ObtenerParametro(nombre) {
-  var p = new URLSearchParams(location.search)
+  const p = new URLSearchParams(location.search)
   return p.get(nombre)
 }
-
 function PintarGrupoEstatico(contenedor, arr) {
-  var CuadroImg = contenedor.querySelectorAll(".CuadroImg")
-  var i = 0
-  for (i = 0; i < CuadroImg.length; i++) {
-    var n = arr[i]
+  const CuadroImg = contenedor.querySelectorAll(".CuadroImg")
+  for (let i = 0; i < CuadroImg.length; i++) {
+    const n = arr[i]
     if (n != null) {
-      var folder = CuadroImg[i].getAttribute("data-folder") || ""
-      var ruta = folder + "/" + n + ".png"
+      const folder = CuadroImg[i].getAttribute("data-folder") || ""
+      const ruta = folder + "/" + n + ".png"
       CuadroImg[i].style.backgroundImage = "url('" + ruta + "')"
       CuadroImg[i].setAttribute("data-src", ruta)
     } else {
@@ -54,75 +53,100 @@ function PintarGrupoEstatico(contenedor, arr) {
   }
 }
 
-function CargarBuild() {
-  IdBuild = ObtenerParametro("id")
-  if (!IdBuild) return
-  fetch("http://localhost:3000/obtener_build_" + IdBuild).then(function (r) {
-    if (r.status === 200) {
-      r.json().then(function (b) {
-        NombreBuildTexto.innerHTML = b.titulo || ""
-        TextoLevel.innerHTML = String(b.nivel || 1)
-        TextoRunes.innerHTML = String(b.runas || 0)
-        CharacterNameTexto.innerHTML = b.personaje || ""
-        Propietario = b.id_usuario || 0
-        LikesActuales = b.likes || 0
-        LikesNumero.innerHTML = String(LikesActuales)
-        var origen = b.origen || "Wretch"
-        ImgOrigin.style.backgroundImage = "url('img/origin/" + origen.toLowerCase() + ".png')"
-        if (b.peinado != null) {
-          HairSlot.style.backgroundImage = "url('img/hairstyle/" + b.peinado + ".png')"
-          HairSlot.setAttribute("data-src", "img/hairstyle/" + b.peinado + ".png")
-        } else {
-          HairSlot.style.backgroundImage = ""
-          HairSlot.setAttribute("data-src", "")
-        }
-        vigorValor.innerHTML = String(b.vigor || 10)
-        mindValor.innerHTML = String(b.mind || 10)
-        enduranceValor.innerHTML = String(b.endurance || 10)
-        strengthValor.innerHTML = String(b.strength || 10)
-        dexterityValor.innerHTML = String(b.dexterity || 10)
-        intelligenceValor.innerHTML = String(b.intelligence || 10)
-        faithValor.innerHTML = String(b.faith || 10)
-        arcaneValor.innerHTML = String(b.arcane || 10)
-        var rh = [b.rh1, b.rh2, b.rh3, b.rh4, b.rh5]
-        var lh = [b.lh1, b.lh2, b.lh3, b.lh4, b.lh5]
-        var ar = [b.ar1, b.ar2, b.ar3, b.ar4]
-        var ta = [b.ta1, b.ta2, b.ta3, b.ta4]
-        PintarGrupoEstatico(RHGrupo, rh)
-        PintarGrupoEstatico(LHGrupo, lh)
-        PintarGrupoEstatico(ArmorGrupo, ar)
-        PintarGrupoEstatico(TalismanGrupo, ta)
-        if (idUsuario === Propietario) {
-          EditarBuildLink.classList.remove("oculto")
-          EditarBuildLink.href = "editor.html?id=" + IdBuild
-          LikeZona.classList.add("oculto")
-        } else {
-          LikeZona.classList.remove("oculto")
-          EditarBuildLink.classList.add("oculto")
-          var likesLocal = JSON.parse(localStorage.getItem("liked_builds") || "[]")
-          if (likesLocal.indexOf(String(IdBuild)) >= 0) {
-            EstadoLike = 1
-          } else {
-            EstadoLike = 0
-          }
-        }
-      })
-    }
-  })
+async function initUser() {
+  const me = await getUsuarioActual()
+  idUsuario = me ? me.id : 0
 }
 
-AgregarFavoritos.addEventListener("click", function () {
+async function verificarFavorito() {
+  if (!idUsuario || !IdBuild) return
+  const r = await fetch("http://localhost:3000/es_favorito_" + idUsuario + "_" + IdBuild)
+  if (r.status === 200) {
+    const o = await r.json()
+    FavoritoEstado = o.favorito ? 1 : 0
+    AgregarFavoritos.textContent = FavoritoEstado ? "Remove from favorites" : "Add to favorites"
+  }
+}
+
+async function CargarBuild() {
+  IdBuild = ObtenerParametro("id") || localStorage.getItem("build_view")
   if (!IdBuild) return
-  fetch("http://localhost:3000/agregar_favorito", {
-    method: "POST",
-    body: JSON.stringify({ id_usuario: idUsuario, id_build: IdBuild })
-  }).then(function (r) {
+  const r = await fetch("http://localhost:3000/obtener_build_" + IdBuild)
+  if (r.status !== 200) return
+  const b = await r.json()
+
+  NombreBuildTexto.innerHTML = b.titulo || ""
+  TextoLevel.innerHTML = String(b.nivel || 1)
+  TextoRunes.innerHTML = String(b.runas || 0)
+  CharacterNameTexto.innerHTML = b.personaje || ""
+  Propietario = b.id_usuario || 0
+  LikesActuales = b.likes || 0
+  LikesNumero.innerHTML = String(LikesActuales)
+  const origen = b.origen || "Wretch"
+  ImgOrigin.style.backgroundImage = "url('img/origin/" + origen.toLowerCase() + ".png')"
+  if (b.peinado != null) {
+    HairSlot.style.backgroundImage = "url('img/hairstyle/" + b.peinado + ".png')"
+    HairSlot.setAttribute("data-src", "img/hairstyle/" + b.peinado + ".png")
+  } else {
+    HairSlot.style.backgroundImage = ""
+    HairSlot.setAttribute("data-src", "")
+  }
+  vigorValor.innerHTML = String(b.vigor || 10)
+  mindValor.innerHTML = String(b.mind || 10)
+  enduranceValor.innerHTML = String(b.endurance || 10)
+  strengthValor.innerHTML = String(b.strength || 10)
+  dexterityValor.innerHTML = String(b.dexterity || 10)
+  intelligenceValor.innerHTML = String(b.intelligence || 10)
+  faithValor.innerHTML = String(b.faith || 10)
+  arcaneValor.innerHTML = String(b.arcane || 10)
+  const rh = [b.rh1, b.rh2, b.rh3, b.rh4, b.rh5]
+  const lh = [b.lh1, b.lh2, b.lh3, b.lh4, b.lh5]
+  const ar = [b.ar1, b.ar2, b.ar3, b.ar4]
+  const ta = [b.ta1, b.ta2, b.ta3, b.ta4]
+  PintarGrupoEstatico(RHGrupo, rh)
+  PintarGrupoEstatico(LHGrupo, lh)
+  PintarGrupoEstatico(ArmorGrupo, ar)
+  PintarGrupoEstatico(TalismanGrupo, ta)
+
+  if (idUsuario === Propietario) {
+    EditarBuildLink.classList.remove("oculto")
+    EditarBuildLink.href = "editor.html?id=" + IdBuild
+    LikeZona.classList.add("oculto")
+    AgregarFavoritos.classList.add("oculto")
+  } else {
+    LikeZona.classList.remove("oculto")
+    EditarBuildLink.classList.add("oculto")
+    AgregarFavoritos.classList.remove("oculto")
+
+    const likesLocal = JSON.parse(localStorage.getItem("liked_builds") || "[]")
+    EstadoLike = (likesLocal.indexOf(String(IdBuild)) >= 0) ? 1 : 0
+    await verificarFavorito()
+  }
+}
+
+AgregarFavoritos.addEventListener("click", async function () {
+  if (!IdBuild || !idUsuario) return
+  if (FavoritoEstado === 0) {
+    const r = await fetch("http://localhost:3000/agregar_favorito", {
+      method: "POST",
+      body: JSON.stringify({ id_usuario: idUsuario, id_build: Number(IdBuild) })
+    })
     if (r.status === 200) {
       FavOK.classList.remove("oculto")
-    } else {
+      FavoritoEstado = 1
+      AgregarFavoritos.textContent = "Remove from favorites"
+    }
+  } else {
+    const r = await fetch("http://localhost:3000/quitar_favorito", {
+      method: "POST",
+      body: JSON.stringify({ id_usuario: idUsuario, id_build: Number(IdBuild) })
+    })
+    if (r.status === 200) {
+      FavoritoEstado = 0
+      AgregarFavoritos.textContent = "Add to favorites"
       FavOK.classList.add("oculto")
     }
-  })
+  }
 })
 
 BtnLike.addEventListener("click", function () {
@@ -133,7 +157,7 @@ BtnLike.addEventListener("click", function () {
         LikesActuales = LikesActuales + 1
         LikesNumero.innerHTML = String(LikesActuales)
         EstadoLike = 1
-        var likesLocal = JSON.parse(localStorage.getItem("liked_builds") || "[]")
+        const likesLocal = JSON.parse(localStorage.getItem("liked_builds") || "[]")
         if (likesLocal.indexOf(String(IdBuild)) < 0) likesLocal.push(String(IdBuild))
         localStorage.setItem("liked_builds", JSON.stringify(likesLocal))
       }
@@ -144,8 +168,8 @@ BtnLike.addEventListener("click", function () {
         if (LikesActuales > 0) LikesActuales = LikesActuales - 1
         LikesNumero.innerHTML = String(LikesActuales)
         EstadoLike = 0
-        var likesLocal = JSON.parse(localStorage.getItem("liked_builds") || "[]")
-        var idx = likesLocal.indexOf(String(IdBuild))
+        const likesLocal = JSON.parse(localStorage.getItem("liked_builds") || "[]")
+        const idx = likesLocal.indexOf(String(IdBuild))
         if (idx >= 0) likesLocal.splice(idx, 1)
         localStorage.setItem("liked_builds", JSON.stringify(likesLocal))
       }
@@ -153,4 +177,7 @@ BtnLike.addEventListener("click", function () {
   }
 })
 
-CargarBuild()
+  ; (async function () {
+    await initUser()
+    await CargarBuild()
+  })();

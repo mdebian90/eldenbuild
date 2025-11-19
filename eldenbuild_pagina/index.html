@@ -2,32 +2,41 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elden Build</title>
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/index.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elden Build</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/index.css">
 </head>
 
 <body>
-    <nav id="Barra">
-        <div id="Logo">
-            <a href="index.html">EldenBuild</a>
-        </div>
-        <div id="BotonesNav">
-            <a href="explore.html" class="boton_nav">Explore</a>
-            <a href="creator.html" class="boton_nav">Creator</a>
-            <a href="favorites.html" class="boton_nav">Favorites</a>
-            <a href="settings.html" class="boton_nav">Settings</a>
-        </div>
-    </nav>
-
-    <div id="PantallaInicio">
-        <div id="BotonesInicio">
-            <a href="sign_in.html" class="boton primario">Sign In</a>
-            <a href="sign_up.html" class="boton">Sign Up</a>
-        </div>
+  <nav id="Barra">
+    <div id="Logo"><a href="index.html">EldenBuild</a></div>
+    <div id="BotonesNav">
+      <a href="explore.html" class="boton_nav">Explore</a>
+      <a href="creator.html" class="boton_nav">Creator</a>
+      <a href="favorites.html" class="boton_nav">Favorites</a>
+      <a href="settings.html" class="boton_nav">Settings</a>
     </div>
+  </nav>
+
+  <div id="PantallaInicio">
+    <div id="BotonesInicio">
+      <button id="btnSignIn" class="boton primario">Sign In</button>
+      <button id="btnSignUp" class="boton">Sign Up</button>
+    </div>
+  </div>
+
 </body>
+<script src="js/base.js"></script>
+<script>
+  const go = (url) => window.location.href = url
+  document.getElementById("btnSignIn").addEventListener("click", () => {
+    if (getToken()) go("favorites.html"); else go("sign_in.html");
+  })
+  document.getElementById("btnSignUp").addEventListener("click", () => {
+    if (getToken()) go("favorites.html"); else go("sign_up.html");
+  })
+</script>
 
 </html>

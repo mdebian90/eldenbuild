@@ -1,118 +1,106 @@
-const GridFavs = document.querySelector("#GridFavs");
-const plantillaFav = document.querySelector(".TarjetaFav");
-const ListaRecientes = document.querySelector("#ListaRecientes");
-const plantillaReciente = document.querySelector(".Reciente");
-const NombreUsuario = document.querySelector("#NombreUsuario");
-const FotoUsuario = document.querySelector("#Avatar");
+(async function () {
+  if (!await requireSessionOrRedirect()) return;
 
-plantillaFav.style.display = "none";
-plantillaReciente.style.display = "none";
+  const GridFavs = document.querySelector("#GridFavs");
+  const plantillaFav = document.querySelector(".TarjetaFav");
+  const ListaRecientes = document.querySelector("#ListaRecientes");
+  const plantillaReciente = document.querySelector(".Reciente");
+  const NombreUsuario = document.querySelector("#NombreUsuario");
+  const FotoUsuario = document.querySelector("#Avatar");
 
-NombreUsuario.innerHTML = "";
+  plantillaFav.style.display = "none";
+  plantillaReciente.style.display = "none";
 
-var id_usuario = 1;
+  const me = await getUsuarioActual()
+  if (!me) { window.location.href = "sign_in.html"; return; }
+  const id_usuario = me.id
 
-fetch("http://localhost:3000/obtener_usuario_" + id_usuario).then(recurso => {
-    if (recurso.status == 200) {
-        recurso.json().then(respuesta => {
-            var indice = "";
-            if (respuesta.nombre && respuesta.nombre.length > 0) {
-                indice = respuesta.nombre.trim().charAt(0) + ".";
-            }
-            var primerApellido = "";
-            if (respuesta.apellido && respuesta.apellido.length > 0) {
-                primerApellido = respuesta.apellido.trim().split(" ")[0];
-            }
-            NombreUsuario.innerHTML = (indice + " " + primerApellido).trim();
-        });
-        fetch("http://localhost:3000/obtener_imagen_usuario_" + id_usuario).then(recurso_iu => {
-            if (recurso_iu.status == 200) {
-                recurso_iu.blob().then(respuesta_iu => {
-                    var url = URL.createObjectURL(respuesta_iu);
-                    if (FotoUsuario) {
-                        if (FotoUsuario.tagName && FotoUsuario.tagName.toLowerCase() === "img") {
-                            FotoUsuario.src = url;
-                        } else {
-                            FotoUsuario.style.backgroundImage = "url('" + url + "')";
-                            FotoUsuario.style.backgroundSize = "cover";
-                            FotoUsuario.style.backgroundPosition = "center";
-                        }
-                    }
-                });
-            } else {
-                if (FotoUsuario) {
-                    if (FotoUsuario.tagName && FotoUsuario.tagName.toLowerCase() === "img") {
-                        FotoUsuario.src = "";
-                    } else {
-                        FotoUsuario.style.background = "#d9d9d9";
-                        FotoUsuario.style.backgroundImage = "";
-                    }
-                }
-            }
-        });
+  const indice = (me.nombre && me.nombre.length > 0) ? (me.nombre.trim().charAt(0) + ".") : ""
+  const primerApellido = (me.apellido && me.apellido.length > 0) ? me.apellido.trim().split(" ")[0] : ""
+  NombreUsuario.innerHTML = (indice + " " + primerApellido).trim()
+
+  fetch("http://localhost:3000/obtener_imagen_usuario_" + id_usuario).then(r => {
+    if (r.status === 200) {
+      r.blob().then(img => {
+        const url = URL.createObjectURL(img)
+        if (FotoUsuario.tagName && FotoUsuario.tagName.toLowerCase() === "img") {
+          FotoUsuario.src = url
+        } else {
+          FotoUsuario.style.backgroundImage = "url('" + url + "')"
+          FotoUsuario.style.backgroundSize = "cover"
+          FotoUsuario.style.backgroundPosition = "center"
+        }
+      })
     } else {
-        NombreUsuario.innerHTML = "";
+      if (FotoUsuario.tagName && FotoUsuario.tagName.toLowerCase() === "img") {
+        FotoUsuario.src = ""
+      } else {
+        FotoUsuario.style.background = "#d9d9d9"
+        FotoUsuario.style.backgroundImage = ""
+      }
     }
-});
+  })
 
-fetch("http://localhost:3000/obtener_favoritos_" + id_usuario).then(recurso => recurso.json()).then(respuesta => {
-    for (i = 0; i < respuesta.builds.length; i++) {
-        var clon = plantillaFav.cloneNode(true);
-        GridFavs.appendChild(clon);
-        clon.style.display = "block";
+  const rf = await fetch("http://localhost:3000/obtener_favoritos_" + id_usuario)
+  const favs = (await rf.json()).builds || []
+  for (let i = 0; i < favs.length; i++) {
+    const clon = plantillaFav.cloneNode(true);
+    clon.style.display = "block";
+    clon.dataset.buildId = favs[i].id
+    GridFavs.appendChild(clon);
 
-        const NombreFav = clon.querySelector(".NombreFav");
-        NombreFav.innerHTML = respuesta.builds[i].titulo;
+    clon.querySelector(".NombreFav").innerHTML = favs[i].titulo
+    clon.querySelector(".NumeroLikes").innerHTML = favs[i].likes
 
-        const NumeroLikes = clon.querySelector(".NumeroLikes");
-        NumeroLikes.innerHTML = respuesta.builds[i].likes;
+    const ImagenFav = clon.querySelector(".ImagenFav");
+    fetch("http://localhost:3000/obtener_imagen_build_" + favs[i].id).then(r => {
+      if (r.status === 200) {
+        r.blob().then(b => {
+          const url = URL.createObjectURL(b)
+          ImagenFav.style.backgroundImage = "url('" + url + "')"
+          ImagenFav.style.backgroundSize = "cover"
+          ImagenFav.style.backgroundPosition = "center"
+        })
+      } else {
+        ImagenFav.style.background = "#d9d9d9"; ImagenFav.style.backgroundImage = ""
+      }
+    })
 
-        const ImagenFav = clon.querySelector(".ImagenFav");
-        fetch("http://localhost:3000/obtener_imagen_build_" + respuesta.builds[i].id).then(recurso_ib => {
-            if (recurso_ib.status == 200) {
-                recurso_ib.blob().then(respuesta_ib => {
-                    var url = URL.createObjectURL(respuesta_ib);
-                    ImagenFav.style.backgroundImage = "url('" + url + "')";
-                    ImagenFav.style.backgroundSize = "cover";
-                    ImagenFav.style.backgroundPosition = "center";
-                });
-            }
-            else {
-                ImagenFav.style.background = "#d9d9d9";
-                ImagenFav.style.backgroundImage = "";
-            }
-        });
+    clon.addEventListener("click", function () {
+      const idSeleccionado = Number(clon.dataset.buildId)
+      localStorage.setItem("build_view", idSeleccionado)
+      let recientes = JSON.parse(localStorage.getItem("recientes_builds") || "[]")
+      if (!recientes.includes(idSeleccionado)) {
+        recientes.unshift(idSeleccionado)
+        if (recientes.length > 5) recientes = recientes.slice(0, 5)
+        localStorage.setItem("recientes_builds", JSON.stringify(recientes))
+      }
+      window.location.href = "viewer.html?id=" + idSeleccionado
+    })
+  }
 
-        clon.addEventListener("click", function () {
-            var recientes = JSON.parse(localStorage.getItem("recientes_builds") || "[]");
-            var idtexto = NombreFav.innerHTML;
-            var nuevo = [idtexto];
-            for (j = 0; j < recientes.length; j++) {
-                if (recientes[j] != idtexto) {
-                    nuevo.push(recientes[j]);
-                }
-            }
-            if (nuevo.length > 5) {
-                nuevo = nuevo.slice(0, 5);
-            }
-            localStorage.setItem("recientes_builds", JSON.stringify(nuevo));
-            DibujarRecientes();
-        });
+  function DibujarRecientes() {
+    ListaRecientes.innerHTML = ""
+    const recientes = JSON.parse(localStorage.getItem("recientes_builds") || "[]")
+    for (let i = 0; i < recientes.length; i++) {
+      const item = plantillaReciente.cloneNode(true)
+      item.style.display = "block"
+      item.dataset.buildId = recientes[i]
+      const FondoReciente = item.querySelector(".FondoReciente")
+      const TextoReciente = item.querySelector(".TextoReciente")
+      TextoReciente.innerHTML = "Build #" + recientes[i]
+      fetch("http://localhost:3000/obtener_imagen_build_" + recientes[i]).then(r => {
+        if (r.status === 200) {
+          r.blob().then(b => { FondoReciente.style.backgroundImage = "url('" + URL.createObjectURL(b) + "')" })
+        }
+      })
+      item.addEventListener("click", function () {
+        const idSel = Number(item.dataset.buildId)
+        localStorage.setItem("build_view", idSel)
+        window.location.href = "viewer.html?id=" + idSel
+      })
+      ListaRecientes.appendChild(item)
     }
-});
-
-function DibujarRecientes() {
-    ListaRecientes.innerHTML = "";
-    var recientes = JSON.parse(localStorage.getItem("recientes_builds") || "[]");
-    for (i = 0; i < recientes.length; i++) {
-        var recientes_b = plantillaReciente.cloneNode(true);
-        ListaRecientes.appendChild(recientes_b);
-        recientes_b.style.display = "block";
-        const FondoReciente = recientes_b.querySelector(".FondoReciente");
-        const TextoReciente = recientes_b.querySelector(".TextoReciente");
-        FondoReciente.style.background = "#d9d9d9";
-        TextoReciente.innerHTML = recientes[i];
-    }
-}
-
-DibujarRecientes();
+  }
+  DibujarRecientes()
+})();

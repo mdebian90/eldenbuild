@@ -1,4 +1,11 @@
-var idUsuario = 1
+let idUsuario = 0
+  ; (async function () {
+    if (!await requireSessionOrRedirect()) return
+    const me = await getUsuarioActual()
+    if (!me) { window.location.href = "sign_in.html"; return; }
+    idUsuario = me.id
+  })()
+
 const InputCover = document.querySelector("#InputCover")
 const NombreBuild = document.querySelector("#NombreBuild")
 const GuardarBuild = document.querySelector("#GuardarBuild")
