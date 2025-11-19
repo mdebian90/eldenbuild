@@ -25,22 +25,25 @@
 
   <div id="EncabezadoCreator">
     <div id="TituloCreator">Build Viewer</div>
-    <div id="AccionesCreator">
+    <div id="AccionesCreator" class="AccionesRow">
       <span id="FavOK" class="ok oculto" aria-hidden="true">✓</span>
       <button id="AgregarFavoritos" class="link">Add to favorites</button>
-      <div id="NombreBuildTexto"></div>
-      <a id="EditarBuildLink" href="#" class="boton primario oculto">Edit build</a>
+
+      <div id="NombreBuildTexto" class="NombreBuildFila"></div>
+
       <div id="LikeZona" class="LikesBuild oculto">
-        <button id="BtnLike" class="Icono"></button>
+        <button id="BtnLike" class="LikeBtn" aria-label="Like"></button>
         <div id="LikesNumero" class="NumeroLikes">0</div>
       </div>
+
+      <a id="EditarBuildLink" href="#" class="boton primario oculto">Edit build</a>
     </div>
   </div>
 
   <div id="GridCreator">
     <div class="Tarjeta">
       <div class="FilaTitulo">
-        <img class="Icono" src="img/icon/attribute.png">
+        <img class="Icono" src="img/icon/attribute.png" alt="">
         <div class="TituloTarjeta">Attribute Points</div>
       </div>
 
@@ -95,7 +98,7 @@
 
     <div class="Tarjeta">
       <div class="FilaTitulo">
-        <img class="Icono" src="img/icon/general.png">
+        <img class="Icono" src="img/icon/general.png" alt="">
         <div class="TituloTarjeta">General Information</div>
       </div>
 
@@ -122,7 +125,7 @@
 
     <div class="Tarjeta">
       <div class="FilaTitulo">
-        <img class="Icono" src="img/icon/equipment.png">
+        <img class="Icono" src="img/icon/equipment.png" alt="">
         <div class="TituloTarjeta">Equipment</div>
       </div>
 

@@ -8,3 +8,20 @@
   background: #e25b5b;
   color: #0e1113;
 }
+
+.InputCover {
+  font-size: 14px;
+  line-height: 1.1;
+  text-align: center;
+}
+
+#CancelarEdicion {
+  border-color: #e6c35b;
+  background: transparent;
+  color: #e6c35b;
+}
+
+#CancelarEdicion:hover {
+  background: #e6c35b;
+  color: #0e1113;
+}

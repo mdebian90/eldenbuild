@@ -1,106 +1,155 @@
 (async function () {
-  if (!await requireSessionOrRedirect()) return;
+
+  adjustNav();
+  const ok = await requireAuth();
+  if (!ok) return;
 
   const GridFavs = document.querySelector("#GridFavs");
   const plantillaFav = document.querySelector(".TarjetaFav");
+
   const ListaRecientes = document.querySelector("#ListaRecientes");
   const plantillaReciente = document.querySelector(".Reciente");
+
   const NombreUsuario = document.querySelector("#NombreUsuario");
   const FotoUsuario = document.querySelector("#Avatar");
 
-  plantillaFav.style.display = "none";
-  plantillaReciente.style.display = "none";
+  if (plantillaFav) plantillaFav.style.display = "none";
+  if (plantillaReciente) plantillaReciente.style.display = "none";
 
-  const me = await getUsuarioActual()
+  const me = await getUsuarioActual();
   if (!me) { window.location.href = "sign_in.html"; return; }
-  const id_usuario = me.id
+  const id_usuario = Number(me.id);
 
-  const indice = (me.nombre && me.nombre.length > 0) ? (me.nombre.trim().charAt(0) + ".") : ""
-  const primerApellido = (me.apellido && me.apellido.length > 0) ? me.apellido.trim().split(" ")[0] : ""
-  NombreUsuario.innerHTML = (indice + " " + primerApellido).trim()
+  const inicial = (me.nombre && me.nombre.trim().length > 0) ? (me.nombre.trim().charAt(0) + ".") : "";
+  const primerApellido = (me.apellido && me.apellido.trim().length > 0) ? me.apellido.trim().split(" ")[0] : "";
+  if (NombreUsuario) NombreUsuario.textContent = (inicial + " " + primerApellido).trim() || "User";
 
-  fetch("http://localhost:3000/obtener_imagen_usuario_" + id_usuario).then(r => {
-    if (r.status === 200) {
-      r.blob().then(img => {
-        const url = URL.createObjectURL(img)
-        if (FotoUsuario.tagName && FotoUsuario.tagName.toLowerCase() === "img") {
-          FotoUsuario.src = url
-        } else {
-          FotoUsuario.style.backgroundImage = "url('" + url + "')"
-          FotoUsuario.style.backgroundSize = "cover"
-          FotoUsuario.style.backgroundPosition = "center"
-        }
-      })
+  try {
+    const rFoto = await fetch(API + "/obtener_imagen_usuario_" + id_usuario);
+    if (rFoto.status === 200) {
+      const blob = await rFoto.blob();
+      const url = URL.createObjectURL(blob);
+      if (FotoUsuario && FotoUsuario.tagName && FotoUsuario.tagName.toLowerCase() === "img") {
+        FotoUsuario.src = url;
+      } else if (FotoUsuario) {
+        FotoUsuario.style.backgroundImage = "url('" + url + "')";
+        FotoUsuario.style.backgroundSize = "cover";
+        FotoUsuario.style.backgroundPosition = "center";
+      }
     } else {
-      if (FotoUsuario.tagName && FotoUsuario.tagName.toLowerCase() === "img") {
-        FotoUsuario.src = ""
-      } else {
-        FotoUsuario.style.background = "#d9d9d9"
-        FotoUsuario.style.backgroundImage = ""
+
+      const def = "img/default.png";
+      if (FotoUsuario && FotoUsuario.tagName && FotoUsuario.tagName.toLowerCase() === "img") {
+        FotoUsuario.src = def;
+      } else if (FotoUsuario) {
+        FotoUsuario.style.backgroundImage = "url('" + def + "')";
+        FotoUsuario.style.backgroundSize = "cover";
+        FotoUsuario.style.backgroundPosition = "center";
       }
     }
-  })
-
-  const rf = await fetch("http://localhost:3000/obtener_favoritos_" + id_usuario)
-  const favs = (await rf.json()).builds || []
-  for (let i = 0; i < favs.length; i++) {
-    const clon = plantillaFav.cloneNode(true);
-    clon.style.display = "block";
-    clon.dataset.buildId = favs[i].id
-    GridFavs.appendChild(clon);
-
-    clon.querySelector(".NombreFav").innerHTML = favs[i].titulo
-    clon.querySelector(".NumeroLikes").innerHTML = favs[i].likes
-
-    const ImagenFav = clon.querySelector(".ImagenFav");
-    fetch("http://localhost:3000/obtener_imagen_build_" + favs[i].id).then(r => {
-      if (r.status === 200) {
-        r.blob().then(b => {
-          const url = URL.createObjectURL(b)
-          ImagenFav.style.backgroundImage = "url('" + url + "')"
-          ImagenFav.style.backgroundSize = "cover"
-          ImagenFav.style.backgroundPosition = "center"
-        })
-      } else {
-        ImagenFav.style.background = "#d9d9d9"; ImagenFav.style.backgroundImage = ""
-      }
-    })
-
-    clon.addEventListener("click", function () {
-      const idSeleccionado = Number(clon.dataset.buildId)
-      localStorage.setItem("build_view", idSeleccionado)
-      let recientes = JSON.parse(localStorage.getItem("recientes_builds") || "[]")
-      if (!recientes.includes(idSeleccionado)) {
-        recientes.unshift(idSeleccionado)
-        if (recientes.length > 5) recientes = recientes.slice(0, 5)
-        localStorage.setItem("recientes_builds", JSON.stringify(recientes))
-      }
-      window.location.href = "viewer.html?id=" + idSeleccionado
-    })
+  } catch {
+    const def = "img/default.png";
+    if (FotoUsuario && FotoUsuario.tagName && FotoUsuario.tagName.toLowerCase() === "img") {
+      FotoUsuario.src = def;
+    } else if (FotoUsuario) {
+      FotoUsuario.style.backgroundImage = "url('" + def + "')";
+      FotoUsuario.style.backgroundSize = "cover";
+      FotoUsuario.style.backgroundPosition = "center";
+    }
   }
 
-  function DibujarRecientes() {
-    ListaRecientes.innerHTML = ""
-    const recientes = JSON.parse(localStorage.getItem("recientes_builds") || "[]")
-    for (let i = 0; i < recientes.length; i++) {
-      const item = plantillaReciente.cloneNode(true)
-      item.style.display = "block"
-      item.dataset.buildId = recientes[i]
-      const FondoReciente = item.querySelector(".FondoReciente")
-      const TextoReciente = item.querySelector(".TextoReciente")
-      TextoReciente.innerHTML = "Build #" + recientes[i]
-      fetch("http://localhost:3000/obtener_imagen_build_" + recientes[i]).then(r => {
-        if (r.status === 200) {
-          r.blob().then(b => { FondoReciente.style.backgroundImage = "url('" + URL.createObjectURL(b) + "')" })
+  try {
+    const rf = await fetch(API + "/obtener_favoritos_" + id_usuario);
+    if (rf.status !== 200) {
+      if (GridFavs) GridFavs.innerHTML = "<div style='padding:16px'>No se pudieron cargar tus favoritos.</div>";
+    } else {
+      const favs = (await rf.json()).builds || [];
+      if (favs.length === 0) {
+        if (GridFavs) GridFavs.innerHTML = "<div style='padding:16px'>Aún no tienes favoritos.</div>";
+      } else {
+        for (let i = 0; i < favs.length; i++) {
+          const b = favs[i];
+          const clon = plantillaFav.cloneNode(true);
+          clon.style.display = "block";
+          clon.dataset.buildId = b.id;
+          GridFavs.appendChild(clon);
+
+          clon.querySelector(".NombreFav").textContent = b.titulo;
+          clon.querySelector(".NumeroLikes").textContent = b.likes;
+
+          const ImagenFav = clon.querySelector(".ImagenFav");
+          try {
+            const rImg = await fetch(API + "/obtener_imagen_build_" + b.id);
+            if (rImg.status === 200) {
+              const blob = await rImg.blob();
+              const url = URL.createObjectURL(blob);
+              ImagenFav.style.backgroundImage = "url('" + url + "')";
+              ImagenFav.style.backgroundSize = "cover";
+              ImagenFav.style.backgroundPosition = "center";
+            } else {
+              ImagenFav.style.background = "#d9d9d9";
+              ImagenFav.style.backgroundImage = "";
+            }
+          } catch {
+            ImagenFav.style.background = "#d9d9d9";
+            ImagenFav.style.backgroundImage = "";
+          }
+
+          clon.addEventListener("click", function () {
+            const idSeleccionado = Number(clon.dataset.buildId);
+            localStorage.setItem("build_view", idSeleccionado);
+            window.location.href = "viewer.html?id=" + idSeleccionado;
+          });
         }
-      })
-      item.addEventListener("click", function () {
-        const idSel = Number(item.dataset.buildId)
-        localStorage.setItem("build_view", idSel)
-        window.location.href = "viewer.html?id=" + idSel
-      })
-      ListaRecientes.appendChild(item)
+      }
+    }
+  } catch {
+    if (GridFavs) GridFavs.innerHTML = "<div style='padding:16px'>Error de red al cargar favoritos.</div>";
+  }
+
+  async function DibujarMisBuilds() {
+    if (!ListaRecientes || !plantillaReciente) return;
+    ListaRecientes.innerHTML = "";
+
+    try {
+      const r = await fetch(API + "/obtener_builds_usuario_" + id_usuario);
+      if (r.status !== 200) {
+        ListaRecientes.innerHTML = "<div style='padding:8px'>No se pudieron cargar tus builds.</div>";
+        return;
+      }
+      const datos = await r.json();
+      const misBuilds = datos.builds || [];
+
+      if (misBuilds.length === 0) {
+        ListaRecientes.innerHTML = "<div style='padding:8px'>Aún no has creado builds.</div>";
+        return;
+      }
+
+      for (let i = 0; i < misBuilds.length; i++) {
+        const b = misBuilds[i];
+        const item = plantillaReciente.cloneNode(true);
+        item.style.display = "block";
+        item.dataset.buildId = b.id;
+
+        item.style.background = "#2b2f31";
+        const texto = item.querySelector(".TextoReciente");
+        if (texto) {
+          texto.textContent = b.titulo || ("Build #" + b.id);
+          texto.style.color = "#e6e6e6";
+        }
+
+        item.addEventListener("click", function () {
+          const idSel = Number(item.dataset.buildId);
+          localStorage.setItem("build_view", idSel);
+          window.location.href = "viewer.html?id=" + idSel;
+        });
+
+        ListaRecientes.appendChild(item);
+      }
+    } catch {
+      ListaRecientes.innerHTML = "<div style='padding:8px'>Error de red al cargar tus builds.</div>";
     }
   }
-  DibujarRecientes()
+
+  await DibujarMisBuilds();
 })();

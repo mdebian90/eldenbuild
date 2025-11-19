@@ -47,6 +47,7 @@ function parseJSONSeguro(buffer) {
 }
 
 function extraerBearerId(req) {
+
   const auth = req.headers["authorization"] || "";
   const partes = auth.split(" ");
   if (partes.length === 2 && partes[0].toLowerCase() === "bearer") {
@@ -55,7 +56,7 @@ function extraerBearerId(req) {
       if (payload && typeof payload.id === "number") {
         return { ok: true, id: payload.id };
       }
-    } catch {
+    } catch (e) {
       return { ok: false, id: null, msg: "token invalido" };
     }
   }
@@ -63,6 +64,7 @@ function extraerBearerId(req) {
 }
 
 const server = http.createServer(async (req, res) => {
+
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "*");
@@ -73,12 +75,17 @@ const server = http.createServer(async (req, res) => {
   }
 
   try {
+
     if (req.method === "GET") {
+
       if (req.url === "/obtener_builds_explore") {
         pool.query(
           "SELECT id, titulo, likes FROM builds WHERE publica = 1 ORDER BY fecha DESC",
           (err, rows) => {
-            if (err) return enviarJSON(res, 500, { mensaje: "error" });
+            if (err) {
+              console.error("SQL obtener_builds_explore:", err.sqlMessage || err);
+              return enviarJSON(res, 500, { mensaje: "error" });
+            }
             enviarJSON(res, 200, { builds: rows });
           }
         );
@@ -89,7 +96,10 @@ const server = http.createServer(async (req, res) => {
         const id = parseInt(req.url.replace("/obtener_build_", "") || "0");
         if (!id) return enviarJSON(res, 400, { mensaje: "id invalido" });
         pool.query("SELECT * FROM builds WHERE id = ?", [id], (err, rows) => {
-          if (err) return enviarJSON(res, 500, { mensaje: "error" });
+          if (err) {
+            console.error("SQL obtener_build:", err.sqlMessage || err);
+            return enviarJSON(res, 500, { mensaje: "error" });
+          }
           if (!rows || rows.length === 0) return enviarJSON(res, 404, { mensaje: "not found" });
           const b = rows[0];
           enviarJSON(res, 200, {
@@ -126,7 +136,10 @@ const server = http.createServer(async (req, res) => {
           "SELECT b.id, b.titulo, b.likes FROM favoritos f INNER JOIN builds b ON b.id = f.id_build WHERE f.id_usuario = ? ORDER BY f.fecha DESC",
           [idUsuario],
           (err, rows) => {
-            if (err) return enviarJSON(res, 500, { mensaje: "error" });
+            if (err) {
+              console.error("SQL obtener_favoritos:", err.sqlMessage || err);
+              return enviarJSON(res, 500, { mensaje: "error" });
+            }
             enviarJSON(res, 200, { builds: rows });
           }
         );
@@ -138,7 +151,10 @@ const server = http.createServer(async (req, res) => {
         if (!id) return enviarJSON(res, 400, { mensaje: "id invalido" });
 
         pool.query("SELECT imagen FROM builds WHERE id = ?", [id], (err, rows) => {
-          if (err) return enviarJSON(res, 404, { mensaje: "error" });
+          if (err) {
+            console.error("SQL obtener_imagen_build:", err.sqlMessage || err);
+            return enviarJSON(res, 404, { mensaje: "error" });
+          }
           let buf = null;
           if (rows && rows.length > 0 && rows[0].imagen) {
             buf = rows[0].imagen;
@@ -158,7 +174,10 @@ const server = http.createServer(async (req, res) => {
           "SELECT nombre, apellido, correo FROM usuarios WHERE id = ?",
           [id],
           (err, rows) => {
-            if (err) return enviarJSON(res, 500, { mensaje: "error" });
+            if (err) {
+              console.error("SQL obtener_usuario_id:", err.sqlMessage || err);
+              return enviarJSON(res, 500, { mensaje: "error" });
+            }
             if (!rows || rows.length === 0) return enviarJSON(res, 404, { mensaje: "not found" });
             enviarJSON(res, 200, rows[0]);
           }
@@ -170,7 +189,10 @@ const server = http.createServer(async (req, res) => {
         const id = parseInt(req.url.replace("/obtener_imagen_usuario_", "") || "0");
         if (!id) return enviarJSON(res, 400, { mensaje: "id invalido" });
         pool.query("SELECT imagen FROM usuarios WHERE id = ?", [id], (err, rows) => {
-          if (err) return enviarJSON(res, 404, { mensaje: "error" });
+          if (err) {
+            console.error("SQL obtener_imagen_usuario:", err.sqlMessage || err);
+            return enviarJSON(res, 404, { mensaje: "error" });
+          }
           if (rows && rows.length > 0 && rows[0].imagen) {
             return enviarPNG(res, 200, rows[0].imagen);
           }
@@ -186,7 +208,10 @@ const server = http.createServer(async (req, res) => {
           "SELECT COUNT(*) c FROM builds WHERE titulo = ?",
           [titulo],
           (err, rows) => {
-            if (err) return enviarJSON(res, 500, { mensaje: "error" });
+            if (err) {
+              console.error("SQL existe_build:", err.sqlMessage || err);
+              return enviarJSON(res, 500, { mensaje: "error" });
+            }
             enviarJSON(res, 200, { existe: rows[0].c > 0 ? 1 : 0 });
           }
         );
@@ -202,7 +227,10 @@ const server = http.createServer(async (req, res) => {
           "SELECT id, nombre, apellido, correo, contrasena FROM usuarios WHERE id = ?",
           [auth.id],
           (err, rows) => {
-            if (err) return enviarJSON(res, 500, { mensaje: "error" });
+            if (err) {
+              console.error("SQL obtener_usuario(token):", err.sqlMessage || err);
+              return enviarJSON(res, 500, { mensaje: "error" });
+            }
             if (!rows || rows.length === 0) return enviarJSON(res, 404, { mensaje: "not found" });
             const u = rows[0];
             enviarJSON(res, 200, {
@@ -217,11 +245,26 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
+      if (req.url.startsWith("/obtener_builds_usuario_")) {
+        const idUsuario = parseInt(req.url.replace("/obtener_builds_usuario_", "") || "0");
+        if (!idUsuario) return enviarJSON(res, 400, { mensaje: "id invalido" });
+        pool.query(
+          "SELECT id, titulo, likes FROM builds WHERE id_usuario = ? ORDER BY fecha DESC",
+          [idUsuario],
+          (err, rows) => {
+            if (err) return enviarJSON(res, 500, { mensaje: "error" });
+            enviarJSON(res, 200, { builds: rows || [] });
+          }
+        );
+        return;
+      }
+
       enviarJSON(res, 404, { mensaje: "not found" });
       return;
     }
 
     if (req.method === "POST") {
+
       if (req.url === "/crear_build") {
         const body = await leerCuerpo(req);
         const data = parseJSONSeguro(body);
@@ -230,7 +273,10 @@ const server = http.createServer(async (req, res) => {
         if (titulo === "") return enviarJSON(res, 400, { mensaje: "titulo vacio" });
 
         pool.query("SELECT COUNT(*) c FROM builds WHERE titulo = ?", [titulo], (err, rows) => {
-          if (err) return enviarJSON(res, 500, { mensaje: "error" });
+          if (err) {
+            console.error("SQL existe_build:", err.sqlMessage || err);
+            return enviarJSON(res, 500, { mensaje: "error" });
+          }
           if (rows[0].c > 0) return enviarJSON(res, 409, { mensaje: "ya existe" });
 
           let cover = null;
@@ -263,15 +309,30 @@ const server = http.createServer(async (req, res) => {
             rh[0] || null, rh[1] || null, rh[2] || null, rh[3] || null, rh[4] || null,
             lh[0] || null, lh[1] || null, lh[2] || null, lh[3] || null, lh[4] || null,
             armor[0] || null, armor[1] || null, armor[2] || null, armor[3] || null,
-            talisman[0] || null, talisman[1] || null, talisman[2] || null, talisman[3] || null
+            talisman[0] || null, talisman[1] || null, talisman[2] || null, talisman[3] || null,
+            1
           ];
 
           const sql =
-            "INSERT INTO builds (id_usuario,titulo,imagen,vigor,mind,endurance,strength,dexterity,intelligence,faith,arcane,nivel,runas,personaje,origen,peinado,rh1,rh2,rh3,rh4,rh5,lh1,lh2,lh3,lh4,lh5,ar1,ar2,ar3,ar4,ta1,ta2,ta3,ta4) " +
-            "VALUES (" + new Array(valores.length).fill("?").join(",") + ")";
+            "INSERT INTO builds (" +
+            "id_usuario,titulo,imagen," +
+            "vigor,mind,endurance,strength,dexterity,intelligence,faith,arcane," +
+            "nivel,runas,personaje,origen,peinado," +
+            "rh1,rh2,rh3,rh4,rh5," +
+            "lh1,lh2,lh3,lh4,lh5," +
+            "ar1,ar2,ar3,ar4," +
+            "ta1,ta2,ta3,ta4," +
+            "publica,fecha" +
+            ") VALUES (" +
+            new Array(34).fill("?").join(",") +
+            ",?, NOW()" +
+            ")";
 
           pool.query(sql, valores, (err2, r2) => {
-            if (err2) return enviarJSON(res, 500, { mensaje: "error" });
+            if (err2) {
+              console.error("SQL crear_build:", err2.sqlMessage || err2);
+              return enviarJSON(res, 500, { mensaje: "error" });
+            }
             enviarJSON(res, 200, { mensaje: "ok", id: r2.insertId });
           });
         });
@@ -289,14 +350,20 @@ const server = http.createServer(async (req, res) => {
           "SELECT COUNT(*) c FROM favoritos WHERE id_usuario = ? AND id_build = ?",
           [id_usuario, id_build],
           (err, rows) => {
-            if (err) return enviarJSON(res, 500, { mensaje: "error" });
+            if (err) {
+              console.error("SQL fav check:", err.sqlMessage || err);
+              return enviarJSON(res, 500, { mensaje: "error" });
+            }
             if (rows[0].c > 0) return enviarJSON(res, 200, { mensaje: "ya existe" });
 
             pool.query(
               "INSERT INTO favoritos (id_usuario, id_build) VALUES (?, ?)",
               [id_usuario, id_build],
               (err2) => {
-                if (err2) return enviarJSON(res, 500, { mensaje: "error" });
+                if (err2) {
+                  console.error("SQL fav insert:", err2.sqlMessage || err2);
+                  return enviarJSON(res, 500, { mensaje: "error" });
+                }
                 enviarJSON(res, 200, { mensaje: "ok" });
               }
             );
@@ -309,7 +376,10 @@ const server = http.createServer(async (req, res) => {
         const id = parseInt(req.url.replace("/sumar_like_", "") || "0");
         if (!id) return enviarJSON(res, 400, { mensaje: "id invalido" });
         pool.query("UPDATE builds SET likes = likes + 1 WHERE id = ?", [id], (err, r) => {
-          if (err) return enviarJSON(res, 500, { mensaje: "error" });
+          if (err) {
+            console.error("SQL sumar_like:", err.sqlMessage || err);
+            return enviarJSON(res, 500, { mensaje: "error" });
+          }
           if (r.affectedRows === 0) return enviarJSON(res, 404, { mensaje: "not found" });
           enviarJSON(res, 200, { mensaje: "ok" });
         });
@@ -323,7 +393,10 @@ const server = http.createServer(async (req, res) => {
           "UPDATE builds SET likes = GREATEST(likes - 1, 0) WHERE id = ?",
           [id],
           (err, r) => {
-            if (err) return enviarJSON(res, 500, { mensaje: "error" });
+            if (err) {
+              console.error("SQL restar_like:", err.sqlMessage || err);
+              return enviarJSON(res, 500, { mensaje: "error" });
+            }
             if (r.affectedRows === 0) return enviarJSON(res, 404, { mensaje: "not found" });
             enviarJSON(res, 200, { mensaje: "ok" });
           }
@@ -342,7 +415,10 @@ const server = http.createServer(async (req, res) => {
           "SELECT id, contrasena FROM usuarios WHERE correo = ?",
           [correo],
           (err, rows) => {
-            if (err) return enviarJSON(res, 500, { mensaje: "error" });
+            if (err) {
+              console.error("SQL login:", err.sqlMessage || err);
+              return enviarJSON(res, 500, { mensaje: "error" });
+            }
             if (!rows || rows.length === 0) return enviarJSON(res, 401, { mensaje: "incorrecto" });
             const u = rows[0];
             if (u.contrasena !== pass) return enviarJSON(res, 401, { mensaje: "incorrecto" });
@@ -369,14 +445,20 @@ const server = http.createServer(async (req, res) => {
           "SELECT COUNT(*) c FROM usuarios WHERE correo = ?",
           [correo],
           (err, rows) => {
-            if (err) return enviarJSON(res, 500, { mensaje: "error" });
+            if (err) {
+              console.error("SQL registro check:", err.sqlMessage || err);
+              return enviarJSON(res, 500, { mensaje: "error" });
+            }
             if (rows[0].c > 0) return enviarJSON(res, 409, { mensaje: "correo ya registrado" });
 
             pool.query(
               "INSERT INTO usuarios (nombre, apellido, correo, contrasena) VALUES (?, ?, ?, ?)",
               [nombre, apellido, correo, pass],
               (err2) => {
-                if (err2) return enviarJSON(res, 500, { mensaje: "error" });
+                if (err2) {
+                  console.error("SQL registro insert:", err2.sqlMessage || err2);
+                  return enviarJSON(res, 500, { mensaje: "error" });
+                }
                 enviarJSON(res, 200, { mensaje: "ok" });
               }
             );
@@ -390,6 +472,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === "PUT") {
+
       if (req.url.startsWith("/editar_build_")) {
         const id = parseInt(req.url.replace("/editar_build_", "") || "0");
         if (!id) return enviarJSON(res, 400, { mensaje: "id invalido" });
@@ -446,7 +529,10 @@ const server = http.createServer(async (req, res) => {
         vals.push(id);
 
         pool.query(sql, vals, (err, r) => {
-          if (err) return enviarJSON(res, 500, { mensaje: "error" });
+          if (err) {
+            console.error("SQL editar_build:", err.sqlMessage || err);
+            return enviarJSON(res, 500, { mensaje: "error" });
+          }
           if (r.affectedRows === 0) return enviarJSON(res, 404, { mensaje: "not found" });
           enviarJSON(res, 200, { mensaje: "ok" });
         });
@@ -464,7 +550,10 @@ const server = http.createServer(async (req, res) => {
           "UPDATE usuarios SET imagen = ? WHERE id = ?",
           [valorImagen, id],
           (err, r) => {
-            if (err) return enviarJSON(res, 500, { mensaje: "error" });
+            if (err) {
+              console.error("SQL actualizar_foto:", err.sqlMessage || err);
+              return enviarJSON(res, 500, { mensaje: "error" });
+            }
             if (r.affectedRows === 0) return enviarJSON(res, 404, { mensaje: "not found" });
             enviarJSON(res, 200, { mensaje: "ok" });
           }
@@ -492,14 +581,20 @@ const server = http.createServer(async (req, res) => {
           "SELECT COUNT(*) c FROM usuarios WHERE correo = ? AND id <> ?",
           [correo, id],
           (err, rows) => {
-            if (err) return enviarJSON(res, 500, { mensaje: "error" });
+            if (err) {
+              console.error("SQL actualizar_usuario check:", err.sqlMessage || err);
+              return enviarJSON(res, 500, { mensaje: "error" });
+            }
             if (rows[0].c > 0) return enviarJSON(res, 409, { mensaje: "correo ya registrado" });
 
             pool.query(
               "UPDATE usuarios SET nombre = ?, apellido = ?, correo = ?, contrasena = ? WHERE id = ?",
               [nombre, apellido, correo, pass, id],
               (err2, r2) => {
-                if (err2) return enviarJSON(res, 500, { mensaje: "error" });
+                if (err2) {
+                  console.error("SQL actualizar_usuario update:", err2.sqlMessage || err2);
+                  return enviarJSON(res, 500, { mensaje: "error" });
+                }
                 if (r2.affectedRows === 0) return enviarJSON(res, 404, { mensaje: "not found" });
                 enviarJSON(res, 200, { mensaje: "ok" });
               }
@@ -514,11 +609,15 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === "DELETE") {
+
       if (req.url.startsWith("/eliminar_build_")) {
         const id = parseInt(req.url.replace("/eliminar_build_", "") || "0");
         if (!id) return enviarJSON(res, 400, { mensaje: "id invalido" });
         pool.query("DELETE FROM builds WHERE id = ?", [id], (err, r) => {
-          if (err) return enviarJSON(res, 500, { mensaje: "error" });
+          if (err) {
+            console.error("SQL eliminar_build:", err.sqlMessage || err);
+            return enviarJSON(res, 500, { mensaje: "error" });
+          }
           if (r.affectedRows === 0) return enviarJSON(res, 404, { mensaje: "not found" });
           enviarJSON(res, 200, { mensaje: "ok" });
         });
@@ -529,7 +628,10 @@ const server = http.createServer(async (req, res) => {
         const id = parseInt(req.url.replace("/eliminar_usuario_", "") || "0");
         if (!id) return enviarJSON(res, 400, { mensaje: "id invalido" });
         pool.query("DELETE FROM usuarios WHERE id = ?", [id], (err, r) => {
-          if (err) return enviarJSON(res, 500, { mensaje: "error" });
+          if (err) {
+            console.error("SQL eliminar_usuario:", err.sqlMessage || err);
+            return enviarJSON(res, 500, { mensaje: "error" });
+          }
           if (r.affectedRows === 0) return enviarJSON(res, 404, { mensaje: "not found" });
           enviarJSON(res, 200, { mensaje: "ok" });
         });
@@ -546,8 +648,11 @@ const server = http.createServer(async (req, res) => {
         pool.query(
           "DELETE FROM favoritos WHERE id_usuario = ? AND id_build = ?",
           [id_usuario, id_build],
-          (err) => {
-            if (err) return enviarJSON(res, 500, { mensaje: "error" });
+          (err, r) => {
+            if (err) {
+              console.error("SQL eliminar_favorito:", err.sqlMessage || err);
+              return enviarJSON(res, 500, { mensaje: "error" });
+            }
             enviarJSON(res, 200, { mensaje: "ok" });
           }
         );
@@ -559,7 +664,8 @@ const server = http.createServer(async (req, res) => {
     }
 
     enviarJSON(res, 404, { mensaje: "no permitido" });
-  } catch {
+  } catch (e) {
+    console.error("Handler error:", e);
     enviarJSON(res, 500, { mensaje: "error" });
   }
 });

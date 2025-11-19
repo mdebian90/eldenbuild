@@ -53,26 +53,27 @@
 
 .Reciente {
     position: relative;
-    height: 56px;
+    min-height: 56px;
     border-radius: 10px;
-    overflow: hidden
+    overflow: hidden;
+    background: #2b2f31;
+
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    cursor: pointer;
 }
 
 .FondoReciente {
-    position: absolute;
-    inset: 0;
-    background: #d9d9d9;
-    background-position: center;
-    background-size: cover;
-    opacity: .9
+    display: none;
 }
 
 .TextoReciente {
-    position: absolute;
-    left: 8px;
-    bottom: 8px;
-    color: #0e1113;
-    font-weight: 800
+    color: #e6e6e6;
+
+    font-weight: 800;
+    line-height: 1.2;
+    word-break: break-word;
 }
 
 #TituloFavs {

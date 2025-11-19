@@ -11,6 +11,13 @@
   pointer-events: none
 }
 
+.AccionesRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 #AgregarFavoritos {
   background: none;
   border: none;
@@ -34,9 +41,33 @@
   margin-right: 4px;
 }
 
-#NombreBuildTexto {
+.NombreBuildFila {
   font-weight: 700;
-  margin-left: 12px;
+  font-size: 15px;
+  opacity: 0.95;
+}
+
+.LikesBuild {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.LikeBtn {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  background: transparent url('img/heart_regular.png') no-repeat center center / contain;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+}
+
+.NumeroLikes {
+  font-weight: 700;
+  line-height: 1;
 }
 
 .FilaAtrib {
@@ -100,25 +131,16 @@
   margin-top: 0px;
 }
 
-#AgregarFavoritos {
-  background: none;
-  border: none;
-  color: #e6e6e6;
-  cursor: pointer;
+#EditarBuildLink {
   font-size: 14px;
-  padding: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  transition: opacity 0.2s ease;
+  line-height: 1.1;
+  text-align: center;
 }
 
-#AgregarFavoritos:hover {
-  opacity: 0.7;
+.oculto {
+  display: none !important;
 }
 
-#FavOK {
-  font-weight: 800;
-  font-size: 16px;
-  line-height: 1;
-  color: #73e36a;
-  margin-right: 4px;
+#LikeZona.oculto {
+  display: none !important;
 }

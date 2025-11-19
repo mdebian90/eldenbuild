@@ -31,14 +31,22 @@ a {
 #Barra {
     position: sticky;
     top: 0;
+    z-index: 1000;
+
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 18px;
+
     height: 64px;
     padding: 0 20px;
-    background: transparent;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1)
+
+    background: rgba(0, 0, 0, 0.5);
+
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 #Logo {

@@ -30,13 +30,12 @@
 </body>
 <script src="js/base.js"></script>
 <script>
-  const go = (url) => window.location.href = url
-  document.getElementById("btnSignIn").addEventListener("click", () => {
-    if (getToken()) go("favorites.html"); else go("sign_in.html");
-  })
-  document.getElementById("btnSignUp").addEventListener("click", () => {
-    if (getToken()) go("favorites.html"); else go("sign_up.html");
-  })
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupIndexPage);
+  } else {
+    setupIndexPage();
+  }
 </script>
 
 </html>

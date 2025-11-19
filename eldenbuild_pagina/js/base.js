@@ -8,18 +8,36 @@ function isLoggedIn() {
   return !!getToken();
 }
 
-async function requireAuth(options = { redirect: true }) {
-  if (isLoggedIn()) {
+async function getUsuarioActual() {
+  const token = getToken();
+  if (!token) return null;
+  try {
+    const r = await fetch(API + "/obtener_usuario", {
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
+    if (r.status !== 200) return null;
+    const u = await r.json();
 
-    return true;
+    if (u && typeof u.id !== "number") u.id = Number(u.id || 0);
+    return u;
+  } catch {
+    return null;
   }
-  if (options.redirect !== false) {
+}
 
+async function requireAuth(options = { redirect: true }) {
+  if (isLoggedIn()) return true;
+
+  if (options.redirect !== false) {
     const href = (location.pathname || "").toLowerCase();
-    const onAuthPage = href.endsWith("/sign_in.html") || href.endsWith("/sign_up.html");
-    if (!onAuthPage) {
-      window.location.href = "sign_in.html";
-    }
+    const onAuthPage =
+      href.endsWith("/sign_in.html") ||
+      href.endsWith("/sign_up.html") ||
+      href.endsWith("/index.html") ||
+      href.endsWith("/");
+    if (!onAuthPage) window.location.href = "sign_in.html";
   }
   return false;
 }
@@ -27,28 +45,29 @@ async function requireAuth(options = { redirect: true }) {
 function adjustNav() {
   const navBtns = document.querySelector("#BotonesNav");
   if (!navBtns) return;
-
-  if (isLoggedIn()) {
-    navBtns.style.display = "flex";
-  } else {
-    navBtns.style.display = "none";
-  }
+  navBtns.style.display = isLoggedIn() ? "flex" : "none";
 }
 
-function adjustIndexAuthButtons() {
-  const signInBtn = document.querySelector("#btn_sign_in");
-  const signUpBtn = document.querySelector("#btn_sign_up");
-  if (!signInBtn && !signUpBtn) return;
+function setupIndexPage() {
+
+  adjustNav();
+
+  const btnSignIn = document.getElementById("btnSignIn");
+  const btnSignUp = document.getElementById("btnSignUp");
+
+  if (!btnSignIn || !btnSignUp) return;
 
   if (isLoggedIn()) {
-    if (signInBtn) signInBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      window.location.href = "favorites.html";
-    });
-    if (signUpBtn) signUpBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      window.location.href = "favorites.html";
-    });
+
+    btnSignIn.style.display = "none";
+    btnSignUp.style.display = "none";
+  } else {
+
+    btnSignIn.style.display = "inline-block";
+    btnSignUp.style.display = "inline-block";
+
+    btnSignIn.onclick = () => (window.location.href = "sign_in.html");
+    btnSignUp.onclick = () => (window.location.href = "sign_up.html");
   }
 }
 

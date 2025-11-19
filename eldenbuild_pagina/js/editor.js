@@ -10,6 +10,7 @@ const InputCover = document.querySelector("#InputCover")
 const NombreBuild = document.querySelector("#NombreBuild")
 const GuardarBuild = document.querySelector("#GuardarBuild")
 const BorrarBuild = document.querySelector("#BorrarBuild")
+const CancelarEdicion = document.querySelector("#CancelarEdicion");
 const CoverOK = document.querySelector("#CoverOK")
 
 const ListaIdsAtributos = ["vigor", "mind", "endurance", "strength", "dexterity", "intelligence", "faith", "arcane"]
@@ -353,5 +354,10 @@ BorrarBuild.addEventListener("click", function () {
     }
   })
 })
+
+CancelarEdicion.addEventListener("click", function () {
+  if (!IdBuild) return;
+  window.location.href = "viewer.html?id=" + IdBuild;
+});
 
 CargarBuild()
